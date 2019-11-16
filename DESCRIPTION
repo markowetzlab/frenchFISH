@@ -1,11 +1,23 @@
 Package: frenchFISH
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Poisson Models for Quantifying DNA Copy-number from FISH Images of Tissue Sections
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Geoff Macintyre, Adam Berman
+Maintainer: Adam Berman <agb61@cam.ac.uk>
+Description: FrenchFISH comprises a nuclear volume correction 
+    method coupled with two types of Poisson models: either a 
+    Poisson model for improved manual spot counting without the 
+    need for control probes; or a homogenous Poisson Point 
+    Process model for automated spot counting.
+License: MIT License
 Encoding: UTF-8
 LazyData: true
+Imports: 
+    MCMCpack, 
+    NHPoisson
+RoxygenNote: 6.1.1
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr

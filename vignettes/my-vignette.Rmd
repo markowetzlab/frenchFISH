@@ -1,0 +1,43 @@
+---
+title: "FrenchFISH Vignette"
+author: "Adam Berman"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Quantifying copy number from a matrix of automatically counted spots
+
+First, let's simulate a matrix with rows for nuclear blobs and columns for three different color probes. Entries in the dataframe will be the number of FISH spots of that column's probe that were automatically counted for that row's blob:
+
+```
+count_matrix = data.frame(area = round(runif(20,150,500), 2), red = round(runif(20,0,5), 0), green = round(runif(20,0,5), 0), blue = round(runif(20,0,5), 0))
+```
+
+Once the count matrix has been created, we can run frenchFISH to quantify the copy number of each probed region by both correcting for nuclear volume correction and implementing a  homogenous Poisson Point Process model. In addition to our count matrix, we include a cell radius and the height of our tissue section:
+
+```
+cell_radius = 8
+section_height = 4
+corrected_count_matrix <- getPPcountsEstimates(count_matrix, cell_radius, section_height)
+```
+
+We can now see our corrected copy number for each probe:
+
+```
+print(corrected_count_matrix)
+```
+
+
+## Quantifying copy number from a matrix of manaully counted spots

@@ -1,0 +1,70 @@
+---
+title: "FrenchFISH Vignette"
+author: "Adam Berman"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Adjusting automatically counted spots
+
+First, let's simulate a daaframe with rows for nuclear blobs and columns for three different color probes (red, blue, and green). Entries in the dataframe will be the number of FISH spots of that column's probe that were automatically counted for that row's blob. The first row specifies the area of each nuclear blob as given by the automatic spot counting software:
+
+```
+automatic_counts = data.frame(area = round(runif(20,150,500), 2), 
+                              red = round(runif(20,0,5), 0), 
+                              green = round(runif(20,0,5), 0), 
+                              blue = round(runif(20,0,5), 0))
+```
+
+Once the count matrix has been created, we can run frenchFISH to quantify the copy number of each probed region by both correcting for nuclear volume correction and implementing a  homogenous Poisson Point Process model. In addition to our count matrix, we include a cell radius and the height of our tissue section:
+
+```
+cell_radius = 8
+section_height = 4
+corrected_automatic_counts <- getAutomaticCountsEstimates(automatic_counts, cell_radius, section_height)
+```
+
+We can now see our corrected spot counts for each probe (including high and low confidence intervals and the median):
+
+```
+print(corrected_automatic_counts)
+```
+
+
+## Adjusting manually counted spots
+
+Next, let's simulate a dataframe of spot counts that have been manually counted for the same three color probes. Note that this time, no area column is included as a first column:
+
+```
+manual_counts = data.frame(red = round(runif(20,0,5), 0), 
+                           green = round(runif(20,0,5), 0), 
+                           blue = round(runif(20,0,5), 0))
+```
+
+To adjust these spot counts using frenchFISH, we simply input this dataframe, along with the cell radius and section height into the getManualCountsEstimates function:
+
+```
+cell_radius = 8
+section_height = 4
+corrected_manual_counts <- getManualCountsEstimates(manual_counts, cell_radius, section_height)
+```
+
+Here are the corrected spot counts as computed by Markov chain Monte Carlo modelling at five different percentiles per probe:
+
+```
+print(corrected_manual_counts)
+```
+
+

@@ -1,3 +1,20 @@
+# return TRUE if all values in df are non-negative integers; otherwise return FALSE
+is.all.nonnegative.integers<-function(df)
+{
+  for (i in 1:nrow(df)) {
+    for (j in 1:ncol(df)) {
+      val = df[i,j]
+      if(!is.numeric(val)) {
+        return(FALSE)
+      }
+      if((val < 0) | (val != round(val))) {
+        return(FALSE)
+      }
+    }
+  }
+  return(TRUE)
+}
+
 #get the average volume of nucleus sampled given the nucleus radius and section height
 getAverageVolumeFrac<-function(r,h)
 {
@@ -34,18 +51,68 @@ getVsegFrac<-function(d,h,r)
   return(Vseg/Vsphere)
 }
 
-#get volume adjusted spot count (for manual spot counting)
-getCounts<-function(rawcounts,r,h)
+#' FrenchFISH function for generating volume adjusted spot counts from spots
+#' which have been manually counted (uses a Markov chain Monte Carlo method).
+#'
+#' @param probeCounts A dataframe of manual spot counts with columns for probes and rows for nuclei
+#' @param radius The cell radius (must be measured in same unit as \code{height})
+#' @param height The section height (must be measured in same unit as \code{radius})
+#' @return The volume adjusted spot counts for each probe that have been generated using MCMC modelling
+#' @export
+#' @examples
+#' manualCountsEstimates<-getManualCountsEstimates(data.frame(red=c(0,2,4), green=c(5,3,1), blue=c(3,0,2)), 8, 4)
+getManualCountsEstimates<-function(probeCounts, radius, height)
 {
-  if(all(is.na(raw.counts)))
-  {
-    res<-NA
-  }else{
-    avg<-getMaxVolumeFrac(r,h)
-    posterior_aqua<-MCMCpack::MCpoissongamma(rawcounts,0.01,0.01,5000)/avg
-    res<-summary(posterior_aqua)$quantiles
+
+  if(!is.numeric(radius)) {
+    stop("radius must be numeric")
   }
-  return(res)
+  if(!is.numeric(height)) {
+    stop("height must be numeric")
+  }
+  if(radius < 0) {
+    stop("radius must be greater than 0")
+  }
+  if(height < 0) {
+    stop("height must be greater than 0")
+  }
+  if(!is.data.frame(probeCounts)) {
+    stop("probeCounts must be a dataframe")
+  }
+  if(ncol(probeCounts) < 1) {
+    stop("probeCounts must have at least one column")
+  }
+  if(nrow(probeCounts) < 1) {
+    stop("probeCounts must have at least one row")
+  }
+  if(any(is.na(probeCounts))) {
+    stop("probeCounts cannot have any NA or NaN values")
+  }
+  if(any(is.infinite(as.matrix(probeCounts)))) {
+    stop("probeCounts cannot have any Inf or -Inf values")
+  }
+  if(!is.all.nonnegative.integers(probeCounts)) {
+    stop("All counts in probeCounts must be non-negative integers")
+  }
+
+  avg<-getMaxVolumeFrac(radius, height)
+  countEstimates<-c()
+
+  for(i in 1:ncol(probeCounts))
+  {
+    res<-c()
+    if(all(is.na(probeCounts[,1])))
+    {
+      res<-NA
+    }else{
+      posterior_aqua<-MCMCpack::MCpoissongamma(probeCounts[,i],0.01,0.01,5000)/avg
+      qtls<-summary(posterior_aqua)$quantiles
+      res<-data.frame(X2.5 = c(qtls[1]), X25 = c(qtls[2]), X50 = c(qtls[3]), X75 = c(qtls[4]), X97.5 = c(qtls[5]))
+    }
+    rownames(res)<-colnames(probeCounts)[i]
+    countEstimates<-rbind(countEstimates, res)
+  }
+  return(data.frame(Probe=row.names(countEstimates), countEstimates, row.names = NULL))
 }
 
 #helper function to convert spot counts and nuclear area measurements into continuous events for PP estimation
@@ -69,34 +136,68 @@ generatePPdat<-function(area,spots)
   return(indat)
 }
 
-#' Main frenchFISH function for generating poisson point estimates of spot counts from
-#' counts which have been automatically generated.
-#' Takes a data frame where the first column is nuclear area and the remaining columns
-#' are spot counts (rows are nuclear blobs).
+#' FrenchFISH function for generating Poisson point estimates of spot counts from
+#' spot counts which have been automatically generated.
 #'
-#' @param countMatrix A dataframe where the first column is nuclear area and the remaining columns are spot counts
-#' @param radius The cell radius
-#' @param height The section height
-#' @return The \code{countMatrix} with spot counts that have been adjusted using Poisson modelling
+#' @param probeCounts A dataframe where the first column contains the areas of the nuclear blobs (this column must be named "area" and the unit of its entries must be the square of the unit used to measure \code{radius} and \code{height}) and the remaining columns (one per probe) contain the spot counts for different probes in each nuclear blob
+#' @param radius The cell radius (must be measured in same unit as \code{height})
+#' @param height The section height (must be measured in same unit as \code{radius})
+#' @return The Poisson point estimates of with spot counts for each probe
 #' @export
 #' @examples
-#' add(1, 1)
-#' add(10, 1)
-getPPcountsEstimates<-function(countMatrix,radius,height)
+#' automaticCountsEstimates<-getAutomaticCountsEstimates(data.frame(area=c(250,300,450), red=c(0,2,4), green=c(5,3,1), blue=c(3,0,2)), 8, 4)
+getAutomaticCountsEstimates<-function(probeCounts, radius, height)
 {
+  if(!is.numeric(radius)) {
+    stop("radius must be numeric")
+  }
+  if(!is.numeric(height)) {
+    stop("height must be numeric")
+  }
+  if(radius < 0) {
+    stop("radius must be greater than 0")
+  }
+  if(height < 0) {
+    stop("height must be greater than 0")
+  }
+  if(!is.data.frame(probeCounts)) {
+    stop("probeCounts must be a dataframe")
+  }
+  if(nrow(probeCounts) < 1) {
+    stop("probeCounts must have at least one row")
+  }
+  if(ncol(probeCounts) < 2) {
+    stop("probeCounts must have at least one column for nuclear blob area and one column for spot counts at a probe")
+  }
+  if(colnames(probeCounts)[1] != "area") {
+    stop('First column of probeCounts must be named "area" and contain nuclear blob areas')
+  }
+  if(any(is.na(probeCounts))) {
+    stop("probeCounts cannot have any NA or NaN values")
+  }
+  if(any(is.infinite(as.matrix(probeCounts)))) {
+    stop("probeCounts cannot have any Inf or -Inf values")
+  }
+  if(!is.all.nonnegative.integers(data.frame(probeCounts[,-1]))) {
+    stop("All counts in probeCounts must be non-negative integers")
+  }
+  if(any(probeCounts$area <= 0)) {
+    stop("All values in area column must be greater than 0")
+  }
+
   cellarea<-pi*(radius^2)
   adjustFact<-getAverageVolumeFrac(radius,height)
 
   countEstimates<-c()
-  for(i in 2:ncol(countMatrix))
+  for(i in 2:ncol(probeCounts))
   {
-    ppindat<-generatePPdat(countMatrix$area,countMatrix[,i])
+    ppindat<-generatePPdat(probeCounts$area,probeCounts[,i])
     ppcumsum<-cumsum(ppindat)/cellarea
     PPestimate<-NHPoisson::fitPP.fun(posE=ppcumsum,nobs=max(ppcumsum),start=list(b0=0),modCI=TRUE,CIty="Transf",dplot=FALSE)
     res<-data.frame(lowCI=PPestimate@LIlambda[1],median=exp(PPestimate@coef),highCI=PPestimate@UIlambda[1])
-    rownames(res)<-colnames(countMatrix)[i]
+    rownames(res)<-colnames(probeCounts)[i]
     countEstimates<-rbind(countEstimates,res)
   }
   countEstimates<-countEstimates/adjustFact
-  return(data.frame(countEstimates,Probe=row.names(countEstimates),row.names = NULL))
+  return(data.frame(Probe=row.names(countEstimates), countEstimates, row.names = NULL))
 }

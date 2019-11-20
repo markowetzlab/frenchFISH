@@ -4,6 +4,9 @@ is.all.nonnegative.integers<-function(df)
   for (i in 1:nrow(df)) {
     for (j in 1:ncol(df)) {
       val = df[i,j]
+      if(is.na(val)) {
+        next # NA and NaN are allowed in probeCounts and handled later
+      }
       if(!is.numeric(val)) {
         return(FALSE)
       }
@@ -85,14 +88,14 @@ getManualCountsEstimates<-function(probeCounts, radius, height)
   if(nrow(probeCounts) < 1) {
     stop("probeCounts must have at least one row")
   }
-  if(any(is.na(probeCounts))) {
-    stop("probeCounts cannot have any NA or NaN values")
-  }
+  #if(any(is.na(probeCounts))) {
+  #  stop("probeCounts cannot have any NA or NaN values")
+  #}
   if(any(is.infinite(as.matrix(probeCounts)))) {
     stop("probeCounts cannot have any Inf or -Inf values")
   }
   if(!is.all.nonnegative.integers(probeCounts)) {
-    stop("All counts in probeCounts must be non-negative integers")
+    stop("All non-NA/NaN counts in probeCounts must be non-negative integers")
   }
 
   avg<-getMaxVolumeFrac(radius, height)
@@ -100,15 +103,22 @@ getManualCountsEstimates<-function(probeCounts, radius, height)
 
   for(i in 1:ncol(probeCounts))
   {
+    prCts <- probeCounts[,i]
+    no_na_probeCounts <- prCts[!is.na(prCts)] # get probe counts column with all NA and NaN entries removed
+
     res<-c()
-    if(all(is.na(probeCounts[,1])))
-    {
-      res<-NA
-    }else{
-      posterior_aqua<-MCMCpack::MCpoissongamma(probeCounts[,i],0.01,0.01,5000)/avg
+    # if all counts for a probe are NA or NaN, make estimates NA
+    if(length(no_na_probeCounts) == 0) {
+      #stop("All probes must have a count")
+      #stop("Probe ", colnames(probeCounts)[i], " has no counts")
+      res<-data.frame(X2.5 = NA, X25 = NA, X50 = NA, X75 = NA, X97.5 = NA)
+    }
+    else {
+      posterior_aqua<-MCMCpack::MCpoissongamma(no_na_probeCounts,0.01,0.01,5000)/avg
       qtls<-summary(posterior_aqua)$quantiles
       res<-data.frame(X2.5 = c(qtls[1]), X25 = c(qtls[2]), X50 = c(qtls[3]), X75 = c(qtls[4]), X97.5 = c(qtls[5]))
     }
+    # Append probe results to all results
     rownames(res)<-colnames(probeCounts)[i]
     countEstimates<-rbind(countEstimates, res)
   }
@@ -118,11 +128,17 @@ getManualCountsEstimates<-function(probeCounts, radius, height)
 #helper function to convert spot counts and nuclear area measurements into continuous events for PP estimation
 generatePPdat<-function(area,spots)
 {
+  #print('generatePPdat')
+  #print(area)
+  #print(spots)
   indat<-0
   for(i in 1:length(area))
   {
+    #print(spots[i])
     if(spots[i]==0)
     {
+      # is this really the desired behavior? see generatePPdat(c(500),c(0)) vs generatePPdat(c(500),c(1)) vs generatePPdat(c(500,500),c(1,0))
+      # would a continue statement be better behavior?
       indat[length(indat)]<-indat[length(indat)]+area[i]
     }
     else
@@ -172,14 +188,14 @@ getAutomaticCountsEstimates<-function(probeCounts, radius, height)
   if(colnames(probeCounts)[1] != "area") {
     stop('First column of probeCounts must be named "area" and contain nuclear blob areas')
   }
-  if(any(is.na(probeCounts))) {
-    stop("probeCounts cannot have any NA or NaN values")
+  if(any(is.na(probeCounts$area))) {
+    stop("Areas in first column cannot have any NA or NaN values")
   }
   if(any(is.infinite(as.matrix(probeCounts)))) {
     stop("probeCounts cannot have any Inf or -Inf values")
   }
   if(!is.all.nonnegative.integers(data.frame(probeCounts[,-1]))) {
-    stop("All counts in probeCounts must be non-negative integers")
+    stop("All non-NA/NaN counts in probeCounts must be non-negative integers")
   }
   if(any(probeCounts$area <= 0)) {
     stop("All values in area column must be greater than 0")
@@ -191,10 +207,24 @@ getAutomaticCountsEstimates<-function(probeCounts, radius, height)
   countEstimates<-c()
   for(i in 2:ncol(probeCounts))
   {
-    ppindat<-generatePPdat(probeCounts$area,probeCounts[,i])
-    ppcumsum<-cumsum(ppindat)/cellarea
-    PPestimate<-NHPoisson::fitPP.fun(posE=ppcumsum,nobs=max(ppcumsum),start=list(b0=0),modCI=TRUE,CIty="Transf",dplot=FALSE)
-    res<-data.frame(lowCI=PPestimate@LIlambda[1],median=exp(PPestimate@coef),highCI=PPestimate@UIlambda[1])
+    prCts <- probeCounts[,i]
+    no_na_probeCounts <- prCts[!is.na(prCts)] # get probe counts column with all NA and NaN entries removed
+    no_na_area <- probeCounts$area[!is.na(prCts)] # get the area column with all entries removed where probe counts are NA or NaN
+
+    # if all counts for a probe are NA or NaN, make estimates NA
+    if(length(no_na_probeCounts) == 0) {
+      #stop("All probes must have a count")
+      #stop("Probe ", colnames(probeCounts)[i], " has no counts")
+      res<-data.frame(lowCI=c(NA), median=c(NA), highCI=c(NA))
+    }
+    else {
+      ppindat<-generatePPdat(no_na_area, no_na_probeCounts)
+      ppcumsum<-cumsum(ppindat)/cellarea # remove NA and NaA values from ppindat before cumsum
+      PPestimate<-NHPoisson::fitPP.fun(posE=ppcumsum,nobs=max(ppcumsum),start=list(b0=0),modCI=TRUE,CIty="Transf",dplot=FALSE)
+      res<-data.frame(lowCI=PPestimate@LIlambda[1],median=exp(PPestimate@coef),highCI=PPestimate@UIlambda[1])
+    }
+    #print(res)
+    # Append probe results to all results
     rownames(res)<-colnames(probeCounts)[i]
     countEstimates<-rbind(countEstimates,res)
   }

@@ -9,7 +9,7 @@ Description: FrenchFISH comprises a nuclear volume correction
     Poisson model for improved manual spot counting without the 
     need for control probes; or a homogenous Poisson Point 
     Process model for automated spot counting.
-License: MIT License
+License: Artistic-2.0
 Encoding: UTF-8
 LazyData: true
 Imports: 

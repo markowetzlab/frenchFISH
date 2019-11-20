@@ -22,5 +22,6 @@ FrenchFISH function for generating volume adjusted spot counts from spots
 which have been manually counted (uses a Markov chain Monte Carlo method).
 }
 \examples{
-manualCountsEstimates<-getManualCountsEstimates(data.frame(red=c(0,2,4), green=c(5,3,1), blue=c(3,0,2)), 8, 4)
+manualCountsEstimates<-getManualCountsEstimates(data.frame(red=c(0,2,4),
+    green=c(5,3,1), blue=c(3,0,2)), 8, 4)
 }

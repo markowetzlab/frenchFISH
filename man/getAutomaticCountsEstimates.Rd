@@ -22,5 +22,6 @@ FrenchFISH function for generating Poisson point estimates of spot counts from
 spot counts which have been automatically generated.
 }
 \examples{
-automaticCountsEstimates<-getAutomaticCountsEstimates(data.frame(area=c(250,300,450), red=c(0,2,4), green=c(5,3,1), blue=c(3,0,2)), 8, 4)
+automaticCountsEstimates<-getAutomaticCountsEstimates(data.frame(area=c(250,300,450),
+    red=c(0,2,4), green=c(5,3,1), blue=c(3,0,2)), 8, 4)
 }

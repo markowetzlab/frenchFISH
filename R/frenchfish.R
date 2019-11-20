@@ -63,7 +63,8 @@ getVsegFrac<-function(d,h,r)
 #' @return The volume adjusted spot counts for each probe that have been generated using MCMC modelling
 #' @export
 #' @examples
-#' manualCountsEstimates<-getManualCountsEstimates(data.frame(red=c(0,2,4), green=c(5,3,1), blue=c(3,0,2)), 8, 4)
+#' manualCountsEstimates<-getManualCountsEstimates(data.frame(red=c(0,2,4),
+#'     green=c(5,3,1), blue=c(3,0,2)), 8, 4)
 getManualCountsEstimates<-function(probeCounts, radius, height)
 {
 
@@ -161,7 +162,8 @@ generatePPdat<-function(area,spots)
 #' @return The Poisson point estimates of with spot counts for each probe
 #' @export
 #' @examples
-#' automaticCountsEstimates<-getAutomaticCountsEstimates(data.frame(area=c(250,300,450), red=c(0,2,4), green=c(5,3,1), blue=c(3,0,2)), 8, 4)
+#' automaticCountsEstimates<-getAutomaticCountsEstimates(data.frame(area=c(250,300,450),
+#'     red=c(0,2,4), green=c(5,3,1), blue=c(3,0,2)), 8, 4)
 getAutomaticCountsEstimates<-function(probeCounts, radius, height)
 {
   if(!is.numeric(radius)) {

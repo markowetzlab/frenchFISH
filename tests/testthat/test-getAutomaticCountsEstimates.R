@@ -54,6 +54,8 @@ test_that("getAutomaticCountsEstimates function throws error messages when input
   expect_error(getAutomaticCountsEstimates(data.frame(area=c(500), red=c(-1.5)), 8, 4), "All non-NA/NaN counts in probeCounts must be non-negative integers")
   expect_error(getAutomaticCountsEstimates(data.frame(area=c(-500), red=c(1)), 8, 4), "All values in area column must be greater than 0")
   expect_error(getAutomaticCountsEstimates(data.frame(area=c(0), red=c(1)), 8, 4), "All values in area column must be greater than 0")
+  expect_warning(getAutomaticCountsEstimates(data.frame(area=c(500), red=c(0)), 8, 4), "All non-NA/NaN counts of red probe are 0. Estimated count for this probe may not be accurate")
+  expect_warning(getAutomaticCountsEstimates(data.frame(area=c(500), red=c(NA)), 8, 4), "All counts of red probe are NA or NaN. Estimated count will be NA")
 })
 
 

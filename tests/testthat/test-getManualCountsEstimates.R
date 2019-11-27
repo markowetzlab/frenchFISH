@@ -37,4 +37,6 @@ test_that("getManualCountsEstimates function throws error messages when input ar
   expect_error(getManualCountsEstimates(data.frame(red=c(1.5)), 8, 4), "All non-NA/NaN counts in probeCounts must be non-negative integers")
   expect_error(getManualCountsEstimates(data.frame(red=c(-1)), 8, 4), "All non-NA/NaN counts in probeCounts must be non-negative integers")
   expect_error(getManualCountsEstimates(data.frame(red=c(-1.5)), 8, 4), "All non-NA/NaN counts in probeCounts must be non-negative integers")
+  expect_warning(getManualCountsEstimates(data.frame(red=c(0)), 8, 4), "All non-NA/NaN counts of red probe are 0. Estimated count for this probe may not be accurate")
+  expect_warning(getManualCountsEstimates(data.frame(red=c(NA)), 8, 4), "All counts of red probe are NA or NaN. Estimated count will be NA")
 })

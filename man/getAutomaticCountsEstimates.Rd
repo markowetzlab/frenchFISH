@@ -15,7 +15,7 @@ getAutomaticCountsEstimates(probeCounts, radius, height)
 \item{height}{The section height (must be measured in same unit as \code{radius})}
 }
 \value{
-The Poisson point estimates of with spot counts for each probe
+The Poisson point estimates of spot counts for each probe
 }
 \description{
 FrenchFISH function for generating Poisson point estimates of spot counts from

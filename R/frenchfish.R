@@ -1,4 +1,10 @@
-# return TRUE if all values in df are non-negative integers; otherwise return FALSE
+#' Helper function to check if all values in the input count
+#' dataframe are either NA, NaN, or non-negative integers
+#'
+#' @param df The count dataframe
+#' @return TRUE if all values in df are non-NA/NaN, non-negative integers; otherwise FALSE
+#' @examples
+#' averageVolumeFrac<-getAverageVolumeFrac(8,4)
 is.all.nonnegative.integers<-function(df)
 {
   for (i in 1:nrow(df)) {
@@ -18,7 +24,14 @@ is.all.nonnegative.integers<-function(df)
   return(TRUE)
 }
 
-#get the average volume of nucleus sampled given the nucleus radius and section height
+#' Helper function to get the average volume of nucleus sampled
+#' given the nucleus radius and section height
+#'
+#' @param r The nuclear radius
+#' @param h The section height
+#' @return The average volume of nucleus sampled given the nucleus radius and section height
+#' @examples
+#' averageVolumeFrac<-getAverageVolumeFrac(8,4)
 getAverageVolumeFrac<-function(r,h)
 {
   Vavg=pi*h*(2/3*r^2 +r*h/3 - h^2/6)
@@ -26,7 +39,14 @@ getAverageVolumeFrac<-function(r,h)
   return(Vavg/Vsphere)
 }
 
-#get the maximum possible volume of nucleus sampled given the nucleus radius and section height
+#' Helper function to get the maximum possible volume of nucleus
+#' sampled given the nucleus radius and section height
+#'
+#' @param r The nuclear radius
+#' @param h The section height
+#' @return The maximum possible volume of nucleus sampled given the nucleus radius and section height
+#' @examples
+#' maxVolumeFrac<-getMaxVolumeFrac(8,4)
 getMaxVolumeFrac<-function(r,h)
 {
   d=0
@@ -37,7 +57,13 @@ getMaxVolumeFrac<-function(r,h)
   return(Vmax/Vsphere)
 }
 
-#get the minimum possible volume of nucleus sampled given the nucleus radius and section height
+#' Helper function that returns the minimum possible volume of nucleus
+#' sampled given the nucleus radius and section height
+#' @param r The radius of the nuclei
+#' @param h The height of the section
+#' @return The minimum possible volume of nucleus sampled given the nucleus
+#' @examples
+#' minVolumeFrac<-getMinVolumeFrac(8,4)
 getMinVolumeFrac<-function(r,h)
 {
   d=r-h
@@ -46,7 +72,15 @@ getMinVolumeFrac<-function(r,h)
   return(Vmin/Vsphere)
 }
 
-#get the fraction of the nucleus sampled for a specified distance from the midpoint
+#' Helper function that returns the fraction of the nucleus sampled for a specified
+#' distance from the midpoint
+#'
+#' @param d The distance sampled from the midpoint
+#' @param h The height of the section
+#' @param r The radius of the nuclei
+#' @return The fraction of the nucleus sampled for a specified distance from the midpoint
+#' @examples
+#' vsegFrac<-getVsegFrac(5,4,8)
 getVsegFrac<-function(d,h,r)
 {
   Vseg=pi*h*(r^2-d^2-h^2/12)
@@ -98,6 +132,14 @@ getManualCountsEstimates<-function(probeCounts, radius, height)
   if(!is.all.nonnegative.integers(probeCounts)) {
     stop("All non-NA/NaN counts in probeCounts must be non-negative integers")
   }
+  for (r in 1:nrow(probeCounts)) {
+    if(all(is.na(probeCounts[r]))) {
+      warning(paste("All counts of", toString(colnames(probeCounts)[r]), "probe are NA or NaN. Estimated count will be NA", sep = " "))
+    }
+    else if(all(probeCounts[r][!is.na(probeCounts[r])] == 0)) {
+      warning(paste("All non-NA/NaN counts of", toString(colnames(probeCounts)[r]), "probe are 0. Estimated count for this probe may not be accurate", sep = " "))
+    }
+  }
 
   avg<-getMaxVolumeFrac(radius, height)
   countEstimates<-c()
@@ -126,7 +168,14 @@ getManualCountsEstimates<-function(probeCounts, radius, height)
   return(data.frame(Probe=row.names(countEstimates), countEstimates, row.names = NULL))
 }
 
-#helper function to convert spot counts and nuclear area measurements into continuous events for PP estimation
+#' Helper function to convert spot counts and nuclear area measurements into
+#' continuous events for Poisson point estimation
+#'
+#' @param area The nuclear area
+#' @param spots The number of spots counted
+#' @return Vector of continuous events for Poisson point estimation
+#' @examples
+#' ppDat<-generatePPdat(c(300,500,450), c(2,0,4))
 generatePPdat<-function(area,spots)
 {
   #print('generatePPdat')
@@ -138,7 +187,7 @@ generatePPdat<-function(area,spots)
     #print(spots[i])
     if(spots[i]==0)
     {
-      # is this really the desired behavior? see generatePPdat(c(500),c(0)) vs generatePPdat(c(500),c(1)) vs generatePPdat(c(500,500),c(1,0))
+      # is this really the desired behavior? see generatePPdat(c(500),c(0)) vs generatePPdat(c(500),c(1)) vs generatePPdat(c(500,500),c(1,0)) vs. generatePPdat(c(500,500),c(0,1))
       # would a continue statement be better behavior?
       indat[length(indat)]<-indat[length(indat)]+area[i]
     }
@@ -159,7 +208,7 @@ generatePPdat<-function(area,spots)
 #' @param probeCounts A dataframe where the first column contains the areas of the nuclear blobs (this column must be named "area" and the unit of its entries must be the square of the unit used to measure \code{radius} and \code{height}) and the remaining columns (one per probe) contain the spot counts for different probes in each nuclear blob
 #' @param radius The cell radius (must be measured in same unit as \code{height})
 #' @param height The section height (must be measured in same unit as \code{radius})
-#' @return The Poisson point estimates of with spot counts for each probe
+#' @return The Poisson point estimates of spot counts for each probe
 #' @export
 #' @examples
 #' automaticCountsEstimates<-getAutomaticCountsEstimates(data.frame(area=c(250,300,450),
@@ -202,6 +251,15 @@ getAutomaticCountsEstimates<-function(probeCounts, radius, height)
   if(any(probeCounts$area <= 0)) {
     stop("All values in area column must be greater than 0")
   }
+  for (r in 2:nrow(probeCounts)) {
+    if(all(is.na(probeCounts[r]))) {
+      warning(paste("All counts of", toString(colnames(probeCounts)[r]), "probe are NA or NaN. Estimated count will be NA", sep = " "))
+    }
+    else if(all(probeCounts[r][!is.na(probeCounts[r])] == 0)) {
+      warning(paste("All non-NA/NaN counts of", toString(colnames(probeCounts)[r]), "probe are 0. Estimated count for this probe may not be accurate", sep = " "))
+    }
+  }
+
 
   cellarea<-pi*(radius^2)
   adjustFact<-getAverageVolumeFrac(radius,height)

@@ -19,6 +19,3 @@ The minimum possible volume of nucleus sampled given the nucleus
 Helper function that returns the minimum possible volume of nucleus
 sampled given the nucleus radius and section height
 }
-\examples{
-minVolumeFrac<-getMinVolumeFrac(8,4)
-}

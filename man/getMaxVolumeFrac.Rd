@@ -19,6 +19,3 @@ The maximum possible volume of nucleus sampled given the nucleus radius and sect
 Helper function to get the maximum possible volume of nucleus
 sampled given the nucleus radius and section height
 }
-\examples{
-maxVolumeFrac<-getMaxVolumeFrac(8,4)
-}

@@ -1,12 +1,33 @@
 ---
-title: "FrenchFISH Vignette"
+title: "FrenchFISH: Poisson Models for Quantifying DNA Copy-number from FISH Images of Tissue Sections"
 author: "Adam Berman"
 date: "`r Sys.Date()`"
+abstract: >
+  Chromosomal aberration and DNA copy number change are robust 
+  hallmarks of cancer. Imaging of spots generated using fluorescence 
+  in situ hybridisation (FISH) of locus specific probes is routinely 
+  used to detect copy number changes in tumour nuclei. However, it 
+  often does not perform well on solid tumour tissue sections, where 
+  partially represented or overlapping nuclei are common. To overcome 
+  these challenges, we have developed a computational approach called 
+  FrenchFISH, which comprises a nuclear volume correction method 
+  coupled with two types of Poisson models: either a Poisson model 
+  for improved manual spot counting without the need for control 
+  probes; or a homogenous Poisson Point Process model for automated 
+  spot counting. We benchmarked the performance of FrenchFISH against 
+  previous approaches in a controlled simulation scenario and exemplify 
+  its use in 12 ovarian cancer FFPE-tissue sections, for which we 
+  assess copy number alterations in three loci (c-Myc, hTERC and SE7). 
+  We show that FrenchFISH outperforms standard spot counting approaches 
+  and that the automated spot counting is significantly faster than 
+  manual without loss of performance. FrenchFISH is a general approach 
+  that can be used to enhance clinical diagnosis on sections of any 
+  tissue.
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{FrenchFISH: Poisson Models for Quantifying DNA Copy-number from FISH Images of Tissue Sections}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  \usepackage[utf8]{inputenc}
 ---
 
 ```{r setup, include = FALSE}
@@ -14,14 +35,22 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+library(frenchFISH)
+set.seed(366)
 ```
 
+**Note:** if you use frenchFISH in published research, please cite:
+
+>  Geoff Macintyre, Anna M. Piskorz, Edith Ross, David B. Morse,  Ke Yuan, Darren Ennis, Jeremy A. Pike, Teodora Goranova, Iain A. McNeish, James D. Brenton, Florian Markowetz (2018)
+> FrenchFISH: Poisson models for quantifying DNA copy-number from fluorescence in situ hybridisation of tissue sections
+> *bioRxiv*
+> [10.1101/487926](https://doi.org/10.1101/487926)
 
 ## Adjusting automatically counted spots
 
-First, let's simulate a daaframe with rows for nuclear blobs and columns for three different color probes (red, blue, and green). Entries in the dataframe will be the number of FISH spots of that column's probe that were automatically counted for that row's blob. The first row specifies the area of each nuclear blob as given by the automatic spot counting software:
+First, let's simulate a dataframe with rows for nuclear blobs and columns for three different color probes (red, blue, and green). Entries in the dataframe will be the number of FISH spots of that column's probe that were automatically counted for that row's blob. The first row specifies the area of each nuclear blob as given by the automatic spot counting software:
 
-```
+```{r readin_autocounts}
 automatic_counts = data.frame(area = round(runif(20,150,500), 2), 
                               red = round(runif(20,0,5), 0), 
                               green = round(runif(20,0,5), 0), 
@@ -30,7 +59,7 @@ automatic_counts = data.frame(area = round(runif(20,150,500), 2),
 
 Once the count matrix has been created, we can run frenchFISH to quantify the copy number of each probed region by both correcting for nuclear volume correction and implementing a  homogenous Poisson Point Process model. In addition to our count matrix, we include a cell radius and the height of our tissue section:
 
-```
+```{r correct_autocounts}
 cell_radius = 8
 section_height = 4
 corrected_automatic_counts <- getAutomaticCountsEstimates(automatic_counts, cell_radius, section_height)
@@ -38,7 +67,7 @@ corrected_automatic_counts <- getAutomaticCountsEstimates(automatic_counts, cell
 
 We can now see our corrected spot counts for each probe (including high and low confidence intervals and the median):
 
-```
+```{r print_corrected_autocounts}
 print(corrected_automatic_counts)
 ```
 
@@ -47,7 +76,7 @@ print(corrected_automatic_counts)
 
 Next, let's simulate a dataframe of spot counts that have been manually counted for the same three color probes. Note that this time, no area column is included as a first column:
 
-```
+```{r readin_manualcounts}
 manual_counts = data.frame(red = round(runif(20,0,5), 0), 
                            green = round(runif(20,0,5), 0), 
                            blue = round(runif(20,0,5), 0))
@@ -55,7 +84,7 @@ manual_counts = data.frame(red = round(runif(20,0,5), 0),
 
 To adjust these spot counts using frenchFISH, we simply input this dataframe, along with the cell radius and section height into the getManualCountsEstimates function:
 
-```
+```{r correct_manualcounts}
 cell_radius = 8
 section_height = 4
 corrected_manual_counts <- getManualCountsEstimates(manual_counts, cell_radius, section_height)
@@ -63,7 +92,7 @@ corrected_manual_counts <- getManualCountsEstimates(manual_counts, cell_radius, 
 
 Here are the corrected spot counts as computed by Markov chain Monte Carlo modelling at five different percentiles per probe:
 
-```
+```{r print_corrected_manualcounts}
 print(corrected_manual_counts)
 ```
 

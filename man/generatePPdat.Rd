@@ -19,6 +19,3 @@ Vector of continuous events for Poisson point estimation
 Helper function to convert spot counts and nuclear area measurements into
 continuous events for Poisson point estimation
 }
-\examples{
-ppDat<-generatePPdat(c(300,500,450), c(2,0,4))
-}

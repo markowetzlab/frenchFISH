@@ -17,6 +17,3 @@ TRUE if all values in df are non-NA/NaN, non-negative integers; otherwise FALSE
 Helper function to check if all values in the input count
 dataframe are either NA, NaN, or non-negative integers
 }
-\examples{
-averageVolumeFrac<-getAverageVolumeFrac(8,4)
-}

@@ -21,6 +21,3 @@ The fraction of the nucleus sampled for a specified distance from the midpoint
 Helper function that returns the fraction of the nucleus sampled for a specified
 distance from the midpoint
 }
-\examples{
-vsegFrac<-getVsegFrac(5,4,8)
-}

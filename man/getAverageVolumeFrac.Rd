@@ -19,6 +19,3 @@ The average volume of nucleus sampled given the nucleus radius and section heigh
 Helper function to get the average volume of nucleus sampled
 given the nucleus radius and section height
 }
-\examples{
-averageVolumeFrac<-getAverageVolumeFrac(8,4)
-}

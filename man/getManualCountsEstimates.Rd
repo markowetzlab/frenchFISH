@@ -8,14 +8,18 @@ which have been manually counted (uses a Markov chain Monte Carlo method).}
 getManualCountsEstimates(probeCounts, radius, height)
 }
 \arguments{
-\item{probeCounts}{A dataframe of manual spot counts with columns for probes and rows for nuclei}
+\item{probeCounts}{A dataframe of manual spot counts with columns for 
+probes and rows for nuclei}
 
-\item{radius}{The cell radius (must be measured in same unit as \code{height})}
+\item{radius}{The cell radius (must be measured in same unit as 
+\code{height})}
 
-\item{height}{The section height (must be measured in same unit as \code{radius})}
+\item{height}{The section height (must be measured in same unit as 
+\code{radius})}
 }
 \value{
-The volume adjusted spot counts for each probe that have been generated using MCMC modelling
+The volume adjusted spot counts for each probe that have been 
+generated using MCMC modelling
 }
 \description{
 FrenchFISH function for generating volume adjusted spot counts from spots

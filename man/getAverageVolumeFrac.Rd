@@ -13,7 +13,8 @@ getAverageVolumeFrac(r, h)
 \item{h}{The section height}
 }
 \value{
-The average volume of nucleus sampled given the nucleus radius and section height
+The average volume of nucleus sampled given the nucleus radius and 
+section height
 }
 \description{
 Helper function to get the average volume of nucleus sampled

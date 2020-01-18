@@ -2,26 +2,35 @@
 % Please edit documentation in R/frenchfish.R
 \name{getAutomaticCountsEstimates}
 \alias{getAutomaticCountsEstimates}
-\title{FrenchFISH function for generating Poisson point estimates of spot counts from
-spot counts which have been automatically generated.}
+\title{FrenchFISH function for generating Poisson point estimates of spot counts 
+from spot counts which have been automatically generated.}
 \usage{
 getAutomaticCountsEstimates(probeCounts, radius, height)
 }
 \arguments{
-\item{probeCounts}{A dataframe where the first column contains the areas of the nuclear blobs (this column must be named "area" and the unit of its entries must be the square of the unit used to measure \code{radius} and \code{height}) and the remaining columns (one per probe) contain the spot counts for different probes in each nuclear blob}
+\item{probeCounts}{A dataframe where the first column contains the areas of 
+the nuclear blobs (this column must be named "area" and the unit of its 
+entries must be the square of the unit used to measure \code{radius} and 
+\code{height}) and the remaining columns (one per probe) contain the spot 
+counts for different probes in each nuclear blob}
 
-\item{radius}{The cell radius (must be measured in same unit as \code{height})}
+\item{radius}{The cell radius (must be measured in same unit as 
+\code{height})}
 
-\item{height}{The section height (must be measured in same unit as \code{radius})}
+\item{height}{The section height (must be measured in same unit as 
+\code{radius})}
 }
 \value{
 The Poisson point estimates of spot counts for each probe
 }
 \description{
-FrenchFISH function for generating Poisson point estimates of spot counts from
-spot counts which have been automatically generated.
+FrenchFISH function for generating Poisson point estimates of spot counts 
+from spot counts which have been automatically generated.
 }
 \examples{
-automaticCountsEstimates<-getAutomaticCountsEstimates(data.frame(area=c(250,300,450),
-    red=c(0,2,4), green=c(5,3,1), blue=c(3,0,2)), 8, 4)
+automaticCountsEstimates<-getAutomaticCountsEstimates(
+    data.frame(area=c(250,300,450), 
+    red=c(0,2,4), 
+    green=c(5,3,1), 
+    blue=c(3,0,2)), 8, 4)
 }

@@ -13,7 +13,8 @@ getMaxVolumeFrac(r, h)
 \item{h}{The section height}
 }
 \value{
-The maximum possible volume of nucleus sampled given the nucleus radius and section height
+The maximum possible volume of nucleus sampled given the nucleus 
+radius and section height
 }
 \description{
 Helper function to get the maximum possible volume of nucleus

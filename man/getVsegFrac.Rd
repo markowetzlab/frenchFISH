@@ -2,8 +2,8 @@
 % Please edit documentation in R/frenchfish.R
 \name{getVsegFrac}
 \alias{getVsegFrac}
-\title{Helper function that returns the fraction of the nucleus sampled for a specified
-distance from the midpoint}
+\title{Helper function that returns the fraction of the nucleus sampled for a 
+specified distance from the midpoint}
 \usage{
 getVsegFrac(d, h, r)
 }
@@ -15,9 +15,10 @@ getVsegFrac(d, h, r)
 \item{r}{The radius of the nuclei}
 }
 \value{
-The fraction of the nucleus sampled for a specified distance from the midpoint
+The fraction of the nucleus sampled for a specified distance from 
+the midpoint
 }
 \description{
-Helper function that returns the fraction of the nucleus sampled for a specified
-distance from the midpoint
+Helper function that returns the fraction of the nucleus sampled for a 
+specified distance from the midpoint
 }

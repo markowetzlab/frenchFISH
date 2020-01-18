@@ -72,16 +72,16 @@ our tissue section:
 ```{r correct_autocounts}
 cell_radius = 8
 section_height = 4
-#corrected_automatic_counts <- getAutomaticCountsEstimates(automatic_counts, 
-#                                                          cell_radius, 
-#                                                          section_height)
+corrected_automatic_counts <- getAutomaticCountsEstimates(automatic_counts, 
+                                                          cell_radius, 
+                                                          section_height)
 ```
 
 We can now see our corrected spot counts for each probe (including high and 
 low confidence intervals and the median):
 
 ```{r print_corrected_autocounts}
-#print(corrected_automatic_counts)
+print(corrected_automatic_counts)
 ```
 
 
@@ -104,16 +104,16 @@ getManualCountsEstimates function:
 ```{r correct_manualcounts}
 cell_radius = 8
 section_height = 4
-#corrected_manual_counts <- getManualCountsEstimates(manual_counts, 
-#                                                    cell_radius, 
-#                                                    section_height)
+corrected_manual_counts <- getManualCountsEstimates(manual_counts, 
+                                                    cell_radius, 
+                                                    section_height)
 ```
 
 Here are the corrected spot counts as computed by Markov chain Monte Carlo 
 modelling at five different percentiles per probe:
 
 ```{r print_corrected_manualcounts}
-#print(corrected_manual_counts)
+print(corrected_manual_counts)
 ```
 
 

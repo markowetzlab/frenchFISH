@@ -99,16 +99,13 @@ checkManualCountsEstimatesArguments<-function(probeCounts, radius, height)
   if(!is.data.frame(probeCounts)) {stop("probeCounts must be a dataframe")}
   if(ncol(probeCounts) < 1) {stop("probeCounts must have at least one column")}
   if(nrow(probeCounts) < 1) {stop("probeCounts must have at least one row")}
-  if(any(is.infinite(as.matrix(probeCounts)))) {stop(paste("probeCounts",
-                                                           "cannot have any",
-                                                           "Inf or -Inf",
-                                                           "values"))}
-  if(!areAllNonnegativeIntegers(probeCounts)) {stop(paste("All non-NA/NaN", 
-                                                          "counts in",
-                                                          "probeCounts must",
-                                                          "be non-negative",
-                                                          "integers"))}
-  for (r in seq_len(nrow(probeCounts))) {
+  if(any(is.infinite(as.matrix(probeCounts)))) {
+    stop("probeCounts cannot have any Inf or -Inf values")
+  }
+  if(!areAllNonnegativeIntegers(probeCounts)) {
+    stop(paste("All non-NA/NaN counts in probeCounts must be non-negative",
+               "integers"))}
+  for (r in seq_len(ncol(probeCounts))) {
     if(all(is.na(probeCounts[r]))) {
       warning(paste("All counts of", toString(colnames(probeCounts)[r]), 
                     "probe are NA or NaN. Estimated count will be NA"))
@@ -221,24 +218,29 @@ checkAutomaticCountsEstimatesArguments<-function(probeCounts, radius, height)
   if(nrow(probeCounts) < 1) {stop("probeCounts must have at least one row")}
   if(ncol(probeCounts) < 2) {
     stop(paste("probeCounts must have at least one column for nuclear blob",
-               "area and one column for spot counts at a probe"))}
+               "area and one column for spot counts at a probe"))
+  }
   if(colnames(probeCounts)[1] != "area") {
     stop(paste('First column of probeCounts must be named "area" and contain',
-               'nuclear blob areas'))}
+               'nuclear blob areas'))
+  }
   if(any(is.na(probeCounts$area))) {
-    stop("Areas in first column cannot have any NA or NaN values")}
+    stop("Areas in first column cannot have any NA or NaN values")
+  }
   if(any(is.infinite(as.matrix(probeCounts)))) {
-    stop("probeCounts cannot have any Inf or -Inf values")}
+    stop("probeCounts cannot have any Inf or -Inf values")
+  }
   if(!areAllNonnegativeIntegers(data.frame(probeCounts[,-1]))) {
-    stop("All non-NA/NaN counts in probeCounts must be non-negative integers")}
+    stop("All non-NA/NaN counts in probeCounts must be non-negative integers")
+  }
   if(any(probeCounts$area <= 0)) {
-    stop("All values in area column must be greater than 0")}
+    stop("All values in area column must be greater than 0")
+  }
   
-  for (r in 2:nrow(probeCounts)) {
+  for (r in 2:ncol(probeCounts)) {
     if(all(is.na(probeCounts[r]))) {
       warning(paste("All counts of", toString(colnames(probeCounts)[r]), 
-                    "probe are NA or NaN. Estimated count will be NA", 
-                    sep = " "))
+                    "probe are NA or NaN. Estimated count will be NA"))
     }
     else if(all(probeCounts[r][!is.na(probeCounts[r])] == 0)) {
       warning(paste("All non-NA/NaN counts of", 

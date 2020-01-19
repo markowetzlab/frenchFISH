@@ -90,6 +90,8 @@ getVsegFrac<-function(d,h,r)
 #' \code{height})
 #' @param height The section height (must be measured in same unit as 
 #' \code{radius})
+#' @return Nothing if all checks are passed; otherwise throws an error or 
+#' warning message
 checkManualCountsEstimatesArguments<-function(probeCounts, radius, height)
 {
   if(!is.numeric(radius)) {stop("radius must be numeric")}
@@ -208,6 +210,8 @@ generatePPdat<-function(area,spots)
 #' \code{height})
 #' @param height The section height (must be measured in same unit as 
 #' \code{radius})
+#' #' @return Nothing if all checks are passed; otherwise throws an error or 
+#' warning message
 checkAutomaticCountsEstimatesArguments<-function(probeCounts, radius, height)
 {
   if(!is.numeric(radius)) {stop("radius must be numeric")}

@@ -16,6 +16,10 @@ probes and rows for nuclei}
 \item{height}{The section height (must be measured in same unit as 
 \code{radius})}
 }
+\value{
+Nothing if all checks are passed; otherwise throws an error or 
+warning message
+}
 \description{
 Helper function to check the arguments input to getManualCountsEstimates
 }

@@ -5,8 +5,10 @@ FrenchFISH
 Installation  
 ----
 ```r
-require(devtools)
-devtools::install_github("markowetzlab/frenchFISH")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("frenchFISH")
 ```
 
 Getting Started

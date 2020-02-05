@@ -1,8 +1,8 @@
 Package: frenchFISH
 Type: Package
 Title: Poisson Models for Quantifying DNA Copy-number from FISH Images of Tissue Sections
-Version: 0.99.3
-Author: Geoff Macintyre, Adam Berman
+Version: 0.99.4
+Author: Adam Berman, Geoff Macintyre
 Maintainer: Adam Berman <agb61@cam.ac.uk>
 Description: FrenchFISH comprises a nuclear volume correction 
     method coupled with two types of Poisson models: either a 
@@ -11,7 +11,6 @@ Description: FrenchFISH comprises a nuclear volume correction
     Process model for automated spot counting.
 License: Artistic-2.0
 Encoding: UTF-8
-LazyData: true
 Imports: 
     MCMCpack, 
     NHPoisson

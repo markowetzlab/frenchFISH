@@ -7,7 +7,7 @@
 checkManualCountsEstimatesArguments(probeCounts, radius, height)
 }
 \arguments{
-\item{probeCounts}{A dataframe of manual spot counts with columns for 
+\item{probeCounts}{A matrix of manual spot counts with columns for 
 probes and rows for nuclei}
 
 \item{radius}{The cell radius (must be measured in same unit as 

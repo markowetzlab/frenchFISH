@@ -2,12 +2,12 @@ context("Testing automatic spot counting correction")
 
 cell_radius = 8
 section_height = 4
-automatic_counts = data.frame(area = c(250, 300, 450),
-                              red = c(0, 2, 4),
-                              green = c(5, 3, 1),
-                              blue = c(3, 0, 2))
+automatic_counts = cbind(area = c(250, 300, 450),
+                         red = c(0, 2, 4),
+                         green = c(5, 3, 1),
+                         blue = c(3, 0, 2))
 automatic_counts_estimates <- getAutomaticCountsEstimates(automatic_counts, cell_radius, section_height)
-# unknown failure: getAutomaticCountsEstimates(data.frame(area=c(5,4,10), red=c(1,2,3), green=c(3,4,5), blue=c(3,0,1)), 8, 4)
+# unknown failure: getAutomaticCountsEstimates(cbind(area=c(5,4,10), red=c(1,2,3), green=c(3,4,5), blue=c(3,0,1)), 8, 4)
 
 test_that("getAutomaticCountsEstimates function works", {
   expect_true(is.data.frame(automatic_counts_estimates))
@@ -38,24 +38,24 @@ test_that("getAutomaticCountsEstimates function throws error messages when input
   expect_error(getAutomaticCountsEstimates(automatic_counts, 8, NA), "height must be numeric")
   expect_error(getAutomaticCountsEstimates(automatic_counts, -8, 4), "radius must be greater than 0")
   expect_error(getAutomaticCountsEstimates(automatic_counts, 8, -4), "height must be greater than 0")
-  expect_error(getAutomaticCountsEstimates("probeCounts", 8, 4), "probeCounts must be a dataframe")
-  expect_error(getAutomaticCountsEstimates(5, 8, 4), "probeCounts must be a dataframe")
-  expect_error(getAutomaticCountsEstimates(data.frame(), 8, 4), "probeCounts must have at least one row")
-  expect_error(getAutomaticCountsEstimates(data.frame(area=c(500)), 8, 4), "probeCounts must have at least one column for nuclear blob area and one column for spot counts at a probe")
-  expect_error(getAutomaticCountsEstimates(data.frame(red=c(2), blue=c(0)), 8, 4), 'First column of probeCounts must be named "area" and contain nuclear blob areas')
-  expect_error(getAutomaticCountsEstimates(data.frame(red=c(2), area=c(500)), 8, 4), 'First column of probeCounts must be named "area" and contain nuclear blob areas')
-  expect_error(getAutomaticCountsEstimates(data.frame(Area=c(2), red=c(500)), 8, 4), 'First column of probeCounts must be named "area" and contain nuclear blob areas')
-  #expect_error(getAutomaticCountsEstimates(data.frame(area=c(500), red=c(NA)), 8, 4), "probeCounts cannot have any NA or NaN values")
-  #expect_error(getAutomaticCountsEstimates(data.frame(area=c(500), red=c(NaN)), 8, 4), "probeCounts cannot have any NA or NaN values")
-  expect_error(getAutomaticCountsEstimates(data.frame(area=c(500), red=c(Inf)), 8, 4), "probeCounts cannot have any Inf or -Inf values")
-  expect_error(getAutomaticCountsEstimates(data.frame(area=c(500), red=c(-Inf)), 8, 4), "probeCounts cannot have any Inf or -Inf values")
-  expect_error(getAutomaticCountsEstimates(data.frame(area=c(500), red=c(1.5)), 8, 4), "All non-NA/NaN counts in probeCounts must be non-negative integers")
-  expect_error(getAutomaticCountsEstimates(data.frame(area=c(500), red=c(-1)), 8, 4), "All non-NA/NaN counts in probeCounts must be non-negative integers")
-  expect_error(getAutomaticCountsEstimates(data.frame(area=c(500), red=c(-1.5)), 8, 4), "All non-NA/NaN counts in probeCounts must be non-negative integers")
-  expect_error(getAutomaticCountsEstimates(data.frame(area=c(-500), red=c(1)), 8, 4), "All values in area column must be greater than 0")
-  expect_error(getAutomaticCountsEstimates(data.frame(area=c(0), red=c(1)), 8, 4), "All values in area column must be greater than 0")
-  expect_warning(getAutomaticCountsEstimates(data.frame(area=c(500), red=c(0)), 8, 4), "All non-NA/NaN counts of red probe are 0. Estimated count for this probe may not be accurate")
-  expect_warning(getAutomaticCountsEstimates(data.frame(area=c(500), red=c(NA)), 8, 4), "All counts of red probe are NA or NaN. Estimated count will be NA")
+  expect_error(getAutomaticCountsEstimates("probeCounts", 8, 4), "probeCounts must be a matrix")
+  expect_error(getAutomaticCountsEstimates(5, 8, 4), "probeCounts must be a matrix")
+  expect_error(getAutomaticCountsEstimates(matrix(NA, nrow = 0, ncol = 0), 8, 4), "probeCounts must have at least one row")
+  expect_error(getAutomaticCountsEstimates(cbind(area=c(500)), 8, 4), "probeCounts must have at least one column for nuclear blob area and one column for spot counts at a probe")
+  expect_error(getAutomaticCountsEstimates(cbind(red=c(2), blue=c(0)), 8, 4), 'First column of probeCounts must be named "area" and contain nuclear blob areas')
+  expect_error(getAutomaticCountsEstimates(cbind(red=c(2), area=c(500)), 8, 4), 'First column of probeCounts must be named "area" and contain nuclear blob areas')
+  expect_error(getAutomaticCountsEstimates(cbind(Area=c(2), red=c(500)), 8, 4), 'First column of probeCounts must be named "area" and contain nuclear blob areas')
+  #expect_error(getAutomaticCountsEstimates(cbind(area=c(500), red=c(NA)), 8, 4), "probeCounts cannot have any NA or NaN values")
+  #expect_error(getAutomaticCountsEstimates(cbind(area=c(500), red=c(NaN)), 8, 4), "probeCounts cannot have any NA or NaN values")
+  expect_error(getAutomaticCountsEstimates(cbind(area=c(500), red=c(Inf)), 8, 4), "probeCounts cannot have any Inf or -Inf values")
+  expect_error(getAutomaticCountsEstimates(cbind(area=c(500), red=c(-Inf)), 8, 4), "probeCounts cannot have any Inf or -Inf values")
+  expect_error(getAutomaticCountsEstimates(cbind(area=c(500), red=c(1.5)), 8, 4), "All non-NA/NaN counts in probeCounts must be non-negative integers")
+  expect_error(getAutomaticCountsEstimates(cbind(area=c(500), red=c(-1)), 8, 4), "All non-NA/NaN counts in probeCounts must be non-negative integers")
+  expect_error(getAutomaticCountsEstimates(cbind(area=c(500), red=c(-1.5)), 8, 4), "All non-NA/NaN counts in probeCounts must be non-negative integers")
+  expect_error(getAutomaticCountsEstimates(cbind(area=c(-500), red=c(1)), 8, 4), "All values in area column must be greater than 0")
+  expect_error(getAutomaticCountsEstimates(cbind(area=c(0), red=c(1)), 8, 4), "All values in area column must be greater than 0")
+  expect_warning(getAutomaticCountsEstimates(cbind(area=c(500), red=c(0)), 8, 4), "All non-NA/NaN counts of red probe are 0. Estimated count for this probe may not be accurate")
+  expect_warning(getAutomaticCountsEstimates(cbind(area=c(500), red=c(NA)), 8, 4), "All counts of red probe are NA or NaN. Estimated count will be NA")
 })
 
 

@@ -8,7 +8,7 @@ from spot counts which have been automatically generated.}
 getAutomaticCountsEstimates(probeCounts, radius, height)
 }
 \arguments{
-\item{probeCounts}{A dataframe where the first column contains the areas of 
+\item{probeCounts}{A matrix where the first column contains the areas of 
 the nuclear blobs (this column must be named "area" and the unit of its 
 entries must be the square of the unit used to measure \code{radius} and 
 \code{height}) and the remaining columns (one per probe) contain the spot 
@@ -29,7 +29,7 @@ from spot counts which have been automatically generated.
 }
 \examples{
 automaticCountsEstimates<-getAutomaticCountsEstimates(
-    data.frame(area=c(250,300,450), 
+    cbind(area=c(250,300,450), 
     red=c(0,2,4), 
     green=c(5,3,1), 
     blue=c(3,0,2)), 8, 4)

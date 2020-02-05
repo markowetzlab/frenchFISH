@@ -1,14 +1,14 @@
 #' Helper function to check if all values in the input count
-#' dataframe are either NA, NaN, or non-negative integers
+#' matrix are either NA, NaN, or non-negative integers
 #'
-#' @param df The count dataframe
-#' @return TRUE if all values in df are non-NA/NaN, non-negative integers; 
-#' otherwise FALSE
-areAllNonnegativeIntegers<-function(df)
+#' @param count_matrix The count matrix
+#' @return TRUE if all values in count_matrix are non-NA/NaN, non-negative 
+#' integers; otherwise FALSE
+areAllNonnegativeIntegers<-function(count_matrix)
 {
-  for (i in seq_len(nrow(df))) {
-    for (j in seq_len(ncol(df))) {
-      val = df[i,j]
+  for (i in seq_len(nrow(count_matrix))) {
+    for (j in seq_len(ncol(count_matrix))) {
+      val = count_matrix[i,j]
       if(is.na(val)) {
         next # NA and NaN are allowed in probeCounts and handled later
       }
@@ -84,7 +84,7 @@ getVsegFrac<-function(d,h,r)
 
 #' Helper function to check the arguments input to getManualCountsEstimates
 #'
-#' @param probeCounts A dataframe of manual spot counts with columns for 
+#' @param probeCounts A matrix of manual spot counts with columns for 
 #' probes and rows for nuclei
 #' @param radius The cell radius (must be measured in same unit as 
 #' \code{height})
@@ -98,25 +98,24 @@ checkManualCountsEstimatesArguments<-function(probeCounts, radius, height)
   if(!is.numeric(height)) {stop("height must be numeric")}
   if(radius < 0) {stop("radius must be greater than 0")}
   if(height < 0) {stop("height must be greater than 0")}
-  if(!is.data.frame(probeCounts)) {stop("probeCounts must be a dataframe")}
+  if(!is.matrix(probeCounts)) {stop("probeCounts must be a matrix")}
   if(ncol(probeCounts) < 1) {stop("probeCounts must have at least one column")}
   if(nrow(probeCounts) < 1) {stop("probeCounts must have at least one row")}
-  if(any(is.infinite(as.matrix(probeCounts)))) {
+  if(any(is.infinite(probeCounts))) {
     stop("probeCounts cannot have any Inf or -Inf values")
   }
   if(!areAllNonnegativeIntegers(probeCounts)) {
-    stop(paste("All non-NA/NaN counts in probeCounts must be non-negative",
-               "integers"))}
+    stop("All non-NA/NaN counts in probeCounts must be non-negative integers")
+  }
   for (r in seq_len(ncol(probeCounts))) {
-    if(all(is.na(probeCounts[r]))) {
-      warning(paste("All counts of", toString(colnames(probeCounts)[r]), 
-                    "probe are NA or NaN. Estimated count will be NA"))
+    if(all(is.na(probeCounts[,r]))) {
+      warning("All counts of ", toString(colnames(probeCounts)[r]), 
+              " probe are NA or NaN. Estimated count will be NA")
     }
-    else if(all(probeCounts[r][!is.na(probeCounts[r])] == 0)) {
-      warning(paste("All non-NA/NaN counts of", 
-                    toString(colnames(probeCounts)[r]), 
-                    "probe are 0. Estimated count for this",
-                    "probe may not be accurate", sep = " "))
+    else if(all(probeCounts[,r][!is.na(probeCounts[,r])] == 0)) {
+      warning("All non-NA/NaN counts of ", toString(colnames(probeCounts)[r]),
+              " probe are 0. Estimated count for this ",
+              "probe may not be accurate")
     }
   }
 }
@@ -124,7 +123,7 @@ checkManualCountsEstimatesArguments<-function(probeCounts, radius, height)
 #' FrenchFISH function for generating volume adjusted spot counts from spots
 #' which have been manually counted (uses a Markov chain Monte Carlo method).
 #'
-#' @param probeCounts A dataframe of manual spot counts with columns for 
+#' @param probeCounts A matrix of manual spot counts with columns for 
 #' probes and rows for nuclei
 #' @param radius The cell radius (must be measured in same unit as 
 #' \code{height})
@@ -134,7 +133,7 @@ checkManualCountsEstimatesArguments<-function(probeCounts, radius, height)
 #' generated using MCMC modelling
 #' @export
 #' @examples
-#' manualCountsEstimates<-getManualCountsEstimates(data.frame(red=c(0,2,4),
+#' manualCountsEstimates<-getManualCountsEstimates(cbind(red=c(0,2,4),
 #'     green=c(5,3,1), blue=c(3,0,2)), 8, 4)
 getManualCountsEstimates<-function(probeCounts, radius, height)
 {
@@ -201,7 +200,7 @@ generatePPdat<-function(area,spots)
 
 #' Helper function to check the arguments input to getAutomaticCountsEstimates
 #'
-#' @param probeCounts A dataframe where the first column contains the areas of 
+#' @param probeCounts A matrix where the first column contains the areas of 
 #' the nuclear blobs (this column must be named "area" and the unit of its 
 #' entries must be the square of the unit used to measure \code{radius} and 
 #' \code{height}) and the remaining columns (one per probe) contain the spot 
@@ -218,38 +217,38 @@ checkAutomaticCountsEstimatesArguments<-function(probeCounts, radius, height)
   if(!is.numeric(height)) {stop("height must be numeric")}
   if(radius < 0) {stop("radius must be greater than 0")}
   if(height < 0) {stop("height must be greater than 0")}
-  if(!is.data.frame(probeCounts)) {stop("probeCounts must be a dataframe")}
+  if(!is.matrix(probeCounts)) {stop("probeCounts must be a matrix")}
   if(nrow(probeCounts) < 1) {stop("probeCounts must have at least one row")}
   if(ncol(probeCounts) < 2) {
-    stop(paste("probeCounts must have at least one column for nuclear blob",
-               "area and one column for spot counts at a probe"))
+    stop("probeCounts must have at least one column for nuclear blob ",
+        "area and one column for spot counts at a probe")
   }
   if(colnames(probeCounts)[1] != "area") {
-    stop(paste('First column of probeCounts must be named "area" and contain',
-               'nuclear blob areas'))
+    stop('First column of probeCounts must be named "area" and contain ',
+         'nuclear blob areas')
   }
-  if(any(is.na(probeCounts$area))) {
+  if(any(is.na(probeCounts[,1]))) {
     stop("Areas in first column cannot have any NA or NaN values")
   }
-  if(any(is.infinite(as.matrix(probeCounts)))) {
+  if(any(is.infinite(probeCounts))) {
     stop("probeCounts cannot have any Inf or -Inf values")
   }
-  if(!areAllNonnegativeIntegers(data.frame(probeCounts[,-1]))) {
+  if(!areAllNonnegativeIntegers(as.matrix(data.frame(probeCounts[,-1])))) {
     stop("All non-NA/NaN counts in probeCounts must be non-negative integers")
   }
-  if(any(probeCounts$area <= 0)) {
+  if(any(probeCounts[,1] <= 0)) {
     stop("All values in area column must be greater than 0")
   }
   
   for (r in 2:ncol(probeCounts)) {
-    if(all(is.na(probeCounts[r]))) {
-      warning(paste("All counts of", toString(colnames(probeCounts)[r]), 
-                    "probe are NA or NaN. Estimated count will be NA"))
+    if(all(is.na(probeCounts[,r]))) {
+      warning("All counts of ", toString(colnames(probeCounts)[r]), 
+              " probe are NA or NaN. Estimated count will be NA")
     }
-    else if(all(probeCounts[r][!is.na(probeCounts[r])] == 0)) {
-      warning(paste("All non-NA/NaN counts of", 
-                    toString(colnames(probeCounts)[r]), "probe are 0.",
-                    "Estimated count for this probe may not be accurate"))
+    else if(all(probeCounts[,r][!is.na(probeCounts[,r])] == 0)) {
+      warning("All non-NA/NaN counts of ", toString(colnames(probeCounts)[r]),
+              " probe are 0. Estimated count for this probe may not be ",
+              "accurate")
     }
   }
 }
@@ -257,7 +256,7 @@ checkAutomaticCountsEstimatesArguments<-function(probeCounts, radius, height)
 #' FrenchFISH function for generating Poisson point estimates of spot counts 
 #' from spot counts which have been automatically generated.
 #'
-#' @param probeCounts A dataframe where the first column contains the areas of 
+#' @param probeCounts A matrix where the first column contains the areas of 
 #' the nuclear blobs (this column must be named "area" and the unit of its 
 #' entries must be the square of the unit used to measure \code{radius} and 
 #' \code{height}) and the remaining columns (one per probe) contain the spot 
@@ -270,7 +269,7 @@ checkAutomaticCountsEstimatesArguments<-function(probeCounts, radius, height)
 #' @export
 #' @examples
 #' automaticCountsEstimates<-getAutomaticCountsEstimates(
-#'     data.frame(area=c(250,300,450), 
+#'     cbind(area=c(250,300,450), 
 #'     red=c(0,2,4), 
 #'     green=c(5,3,1), 
 #'     blue=c(3,0,2)), 8, 4)
@@ -287,7 +286,7 @@ getAutomaticCountsEstimates<-function(probeCounts, radius, height)
     # probe counts column with all NA and NaN entries removed
     no_na_probeCounts <- prCts[!is.na(prCts)]
     # area column with all entries removed where probe counts are NA or NaN
-    no_na_area <- probeCounts$area[!is.na(prCts)]
+    no_na_area <- probeCounts[,1][!is.na(prCts)]
     # if all counts for a probe are NA or NaN, make estimates NA
     if(length(no_na_probeCounts) == 0) { 
       res<-data.frame(lowCI=c(NA), median=c(NA), highCI=c(NA))

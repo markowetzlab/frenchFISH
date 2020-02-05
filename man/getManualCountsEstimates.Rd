@@ -8,7 +8,7 @@ which have been manually counted (uses a Markov chain Monte Carlo method).}
 getManualCountsEstimates(probeCounts, radius, height)
 }
 \arguments{
-\item{probeCounts}{A dataframe of manual spot counts with columns for 
+\item{probeCounts}{A matrix of manual spot counts with columns for 
 probes and rows for nuclei}
 
 \item{radius}{The cell radius (must be measured in same unit as 
@@ -26,6 +26,6 @@ FrenchFISH function for generating volume adjusted spot counts from spots
 which have been manually counted (uses a Markov chain Monte Carlo method).
 }
 \examples{
-manualCountsEstimates<-getManualCountsEstimates(data.frame(red=c(0,2,4),
+manualCountsEstimates<-getManualCountsEstimates(cbind(red=c(0,2,4),
     green=c(5,3,1), blue=c(3,0,2)), 8, 4)
 }

@@ -7,7 +7,7 @@
 checkAutomaticCountsEstimatesArguments(probeCounts, radius, height)
 }
 \arguments{
-\item{probeCounts}{A dataframe where the first column contains the areas of 
+\item{probeCounts}{A matrix where the first column contains the areas of 
 the nuclear blobs (this column must be named "area" and the unit of its 
 entries must be the square of the unit used to measure \code{radius} and 
 \code{height}) and the remaining columns (one per probe) contain the spot 

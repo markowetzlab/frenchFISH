@@ -3,18 +3,18 @@
 \name{areAllNonnegativeIntegers}
 \alias{areAllNonnegativeIntegers}
 \title{Helper function to check if all values in the input count
-dataframe are either NA, NaN, or non-negative integers}
+matrix are either NA, NaN, or non-negative integers}
 \usage{
-areAllNonnegativeIntegers(df)
+areAllNonnegativeIntegers(count_matrix)
 }
 \arguments{
-\item{df}{The count dataframe}
+\item{count_matrix}{The count matrix}
 }
 \value{
-TRUE if all values in df are non-NA/NaN, non-negative integers; 
-otherwise FALSE
+TRUE if all values in count_matrix are non-NA/NaN, non-negative 
+integers; otherwise FALSE
 }
 \description{
 Helper function to check if all values in the input count
-dataframe are either NA, NaN, or non-negative integers
+matrix are either NA, NaN, or non-negative integers
 }

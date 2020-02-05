@@ -14,7 +14,7 @@ BiocManager::install("frenchFISH")
 Getting Started
 ----
 ```
-vignettes/frenchfish-vignette.Rmd
+vignettes/frenchFISH.Rmd
 ```
 
 Disclaimer

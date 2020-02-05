@@ -68,9 +68,11 @@ copy number of each probed region by both correcting for nuclear volume
 correction and implementing a  homogenous Poisson Point Process model. In 
 addition to our count matrix, we include a cell radius and the height of 
 our tissue section (which should be modified as appropriate depending on the
-cell type and section height you are using):
+cell type and section height you are using). Note that before running the
+Poisson model, we set the seed to insure our results will be reproducible:
 
 ```{r correct_autocounts}
+set.seed(366)
 cell_radius = 8
 section_height = 4
 corrected_automatic_counts <- getAutomaticCountsEstimates(automatic_counts, 

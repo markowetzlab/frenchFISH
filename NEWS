@@ -2,6 +2,11 @@
 \title{News for Package \pkg{frenchFISH}}
 \encoding{UTF-8}
 
+\section{Version 0.99.5}{\itemize{
+\item
+Added seed-setting explanation in vignette and slightly changed the readme.
+}}
+
 \section{Version 0.99.4}{\itemize{
 \item
 Changed accepted input data structure for area probe counts from a dataframe to a matrix.

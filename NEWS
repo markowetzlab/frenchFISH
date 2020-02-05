@@ -4,6 +4,11 @@
 
 \section{Version 0.99.5}{\itemize{
 \item
+Subscribed to bioc-devel.
+}}
+
+\section{Version 0.99.5}{\itemize{
+\item
 Added seed-setting explanation in vignette and slightly changed the readme.
 }}
 

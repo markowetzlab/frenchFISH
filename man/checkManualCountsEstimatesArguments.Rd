@@ -10,7 +10,7 @@ checkManualCountsEstimatesArguments(probeCounts, radius, height)
 \item{probeCounts}{A matrix of manual spot counts with columns for 
 probes and rows for nuclei}
 
-\item{radius}{The cell radius (must be measured in same unit as 
+\item{radius}{The cells' nuclear radius (must be measured in same unit as 
 \code{height})}
 
 \item{height}{The section height (must be measured in same unit as 

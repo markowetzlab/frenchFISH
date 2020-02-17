@@ -2,6 +2,14 @@
 \title{News for Package \pkg{frenchFISH}}
 \encoding{UTF-8}
 
+\section{Version 0.99.7}{\itemize{
+\item
+Added convertFishalyserCsvToCountMatrix function to convert the CSV count 
+output of the FISHalyseR Bioconductor package to a probe count matrix suitable
+for frenchFISH's getAutomaticCountsEstimates function. Updated vignette to 
+reflect this addition.
+}}
+
 \section{Version 0.99.5}{\itemize{
 \item
 Subscribed to bioc-devel.

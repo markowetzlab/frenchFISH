@@ -50,33 +50,38 @@ in situ hybridisation of tissue sections
 
 ## Adjusting automatically counted spots
 
-First, let's simulate a matrix with rows for nuclear blobs and columns for 
-three different color probes (red, blue, and green). Entries in the matrix 
-will be the number of FISH spots of that column's probe that were 
-automatically counted for that row's blob. The first row specifies the area 
-of each nuclear blob as given by the automatic spot counting software:
+To provide a real-world use case for frenchFISH, let's take some FISH probe 
+counts which were generated using FISHalyseR, an existing Bioconductor package 
+which uses computer vision to automatically count spots visible in FISH 
+images. These data, saved in SampleFISH.jpg_data.csv, are the output of 
+FISHalyseR's vignette, and includes counts for two color probes (a red one and 
+a green one) that were generated for 44 cell nuclei. First, we must use 
+frenchFISH's built-in function to convert the CSV output of FISHalyseR to a 
+probe count matrix formatted correctly for input to frenchFISH's 
+getAutomaticCountsEstimates function:
 
 ```{r readin_autocounts}
-automatic_counts = cbind(area = round(runif(20,150,500), 2), 
-                         red = round(runif(20,0,5), 0), 
-                         green = round(runif(20,0,5), 0), 
-                         blue = round(runif(20,0,5), 0))
+fishalyserCsvPath <- system.file("extdata", 
+                                 "SampleFISH.jpg_data.csv", 
+                                 package="frenchFISH")
+automatic_counts <- convertFishalyserCsvToCountMatrix(fishalyserCsvPath)
 ```
 
 Once the count matrix has been created, we can run frenchFISH to quantify the 
 copy number of each probed region by both correcting for nuclear volume 
 correction and implementing a  homogenous Poisson Point Process model. In 
-addition to our count matrix, we include a cell radius and the height of 
-our tissue section (which should be modified as appropriate depending on the
-cell type and section height you are using). Note that before running the
-Poisson model, we set the seed to insure our results will be reproducible:
+addition to our count matrix, we include the nuclear radius of the cells we 
+are using and the height of our tissue section (which should be modified as 
+appropriate depending on the cell type and section height you are using). Note 
+that before running the Poisson model, we set the seed to insure our results 
+will be reproducible:
 
 ```{r correct_autocounts}
 set.seed(366)
-cell_radius = 8
-section_height = 4
+nuclear_radius <- 40
+section_height <- 5
 corrected_automatic_counts <- getAutomaticCountsEstimates(automatic_counts, 
-                                                          cell_radius, 
+                                                          nuclear_radius, 
                                                           section_height)
 ```
 
@@ -90,25 +95,25 @@ print(corrected_automatic_counts)
 
 ## Adjusting manually counted spots
 
-Next, let's simulate a matrix of spot counts that have been manually 
-counted for the same three color probes. Note that this time, no area column 
-is included as a first column:
+Next, let's simulate a matrix of spot counts that have been manually counted 
+for three color probes (a red one, a green one, and a blue one) across 20 cell 
+nuclei. Note that this time, no area column is included as a first column:
 
 ```{r readin_manualcounts}
-manual_counts = cbind(red = round(runif(20,0,5), 0), 
-                      green = round(runif(20,0,5), 0), 
-                      blue = round(runif(20,0,5), 0))
+manual_counts <- cbind(red = round(runif(20,0,5), 0), 
+                       green = round(runif(20,0,5), 0), 
+                       blue = round(runif(20,0,5), 0))
 ```
 
 To adjust these spot counts using frenchFISH, we simply input this matrix, 
-along with the cell radius and section height into the 
+along with the nuclear radius of our cell type and section height into the  
 getManualCountsEstimates function:
 
 ```{r correct_manualcounts}
-cell_radius = 8
-section_height = 4
+nuclear_radius <- 8
+section_height <- 4
 corrected_manual_counts <- getManualCountsEstimates(manual_counts, 
-                                                    cell_radius, 
+                                                    nuclear_radius, 
                                                     section_height)
 ```
 

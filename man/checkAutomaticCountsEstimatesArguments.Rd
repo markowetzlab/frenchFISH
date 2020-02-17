@@ -13,7 +13,7 @@ entries must be the square of the unit used to measure \code{radius} and
 \code{height}) and the remaining columns (one per probe) contain the spot 
 counts for different probes in each nuclear blob}
 
-\item{radius}{The cell radius (must be measured in same unit as 
+\item{radius}{The cells' nuclear radius (must be measured in same unit as 
 \code{height})}
 
 \item{height}{The section height (must be measured in same unit as 

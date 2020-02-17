@@ -86,7 +86,7 @@ getVsegFrac<-function(d,h,r)
 #'
 #' @param probeCounts A matrix of manual spot counts with columns for 
 #' probes and rows for nuclei
-#' @param radius The cell radius (must be measured in same unit as 
+#' @param radius The cells' nuclear radius (must be measured in same unit as 
 #' \code{height})
 #' @param height The section height (must be measured in same unit as 
 #' \code{radius})
@@ -125,7 +125,7 @@ checkManualCountsEstimatesArguments<-function(probeCounts, radius, height)
 #'
 #' @param probeCounts A matrix of manual spot counts with columns for 
 #' probes and rows for nuclei
-#' @param radius The cell radius (must be measured in same unit as 
+#' @param radius The cells' nuclear radius (must be measured in same unit as 
 #' \code{height})
 #' @param height The section height (must be measured in same unit as 
 #' \code{radius})
@@ -205,7 +205,7 @@ generatePPdat<-function(area,spots)
 #' entries must be the square of the unit used to measure \code{radius} and 
 #' \code{height}) and the remaining columns (one per probe) contain the spot 
 #' counts for different probes in each nuclear blob
-#' @param radius The cell radius (must be measured in same unit as 
+#' @param radius The cells' nuclear radius (must be measured in same unit as 
 #' \code{height})
 #' @param height The section height (must be measured in same unit as 
 #' \code{radius})
@@ -253,6 +253,54 @@ checkAutomaticCountsEstimatesArguments<-function(probeCounts, radius, height)
   }
 }
 
+#' Function to convert CSV output of the FISHalyseR automatic FISH 
+#' splot counting software to a count matrix suitable for input to 
+#' frenchFISH's getAutomaticCountsEstimates
+#'
+#' @param pathToFishalyserCsv The path to the CSV file of automatic spot 
+#' counts outputted by FISHalyseR
+#' @return A count matrix suitable for input to getAutomaticCountsEstimates
+#' @export
+#' @examples
+#' probeCounts<-convertFishalyserCsvToCountMatrix(
+#'     system.file("extdata", "SampleFISH.jpg_data.csv", package="frenchFISH"))
+convertFishalyserCsvToCountMatrix<-function(pathToFishalyserCsv)
+{
+  if (!(is.character(pathToFishalyserCsv))) {
+    stop("pathToFishalyserCsv must be a string")
+  }
+  if (!file.exists(pathToFishalyserCsv)) {
+    stop(pathToFishalyserCsv, ' does not exist')
+  }
+
+  fishalyser_df <- read.csv(pathToFishalyserCsv)
+  
+  # Check that fishalyser_df has the necessary columns
+  if (!("area.of.nucleus" %in% colnames(fishalyser_df))) {
+    stop("'area.of.nucleus' column not present in ", pathToFishalyserCsv)
+  }
+  
+  # Get probe count columns
+  count_cols <- grep("^num[.]of[.].*[.]probes$", colnames(fishalyser_df), 
+                     value=TRUE)
+  if (identical(count_cols, character(0))) {
+    stop("No probe count columns matching regex ",
+         "'^num[.]of[.].*[.]probes$' found in ", pathToFishalyserCsv)
+  }
+  
+  # Create matrix from count columns
+  fishalyser_counts_mat <- as.matrix(fishalyser_df[, count_cols])
+  
+  # Rename count columns to be just the color name 
+  # (e.g. 'num.of.red.probes' -> 'red')
+  probe_names <- unlist(strsplit(colnames(fishalyser_counts_mat), 
+                                 "(num[.]of[.]|[.]probes)"))
+  probe_names <- probe_names[probe_names != ""]
+  colnames(fishalyser_counts_mat) <- probe_names
+  
+  return(cbind(area=fishalyser_df[, "area.of.nucleus"], fishalyser_counts_mat))
+}
+
 #' FrenchFISH function for generating Poisson point estimates of spot counts 
 #' from spot counts which have been automatically generated.
 #'
@@ -261,7 +309,7 @@ checkAutomaticCountsEstimatesArguments<-function(probeCounts, radius, height)
 #' entries must be the square of the unit used to measure \code{radius} and 
 #' \code{height}) and the remaining columns (one per probe) contain the spot 
 #' counts for different probes in each nuclear blob
-#' @param radius The cell radius (must be measured in same unit as 
+#' @param radius The cells' nuclear radius (must be measured in same unit as 
 #' \code{height})
 #' @param height The section height (must be measured in same unit as 
 #' \code{radius})

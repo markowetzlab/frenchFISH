@@ -3,7 +3,7 @@
 #'
 #' @param count_matrix The count matrix
 #' @return TRUE if all values in count_matrix are non-NA/NaN, non-negative 
-#' integers; otherwise FALSE
+#' integers; otherwise FALSE.
 areAllNonnegativeIntegers<-function(count_matrix)
 {
   for (i in seq_len(nrow(count_matrix))) {
@@ -24,65 +24,20 @@ areAllNonnegativeIntegers<-function(count_matrix)
 }
 
 #' Helper function to get the average volume of nucleus sampled
-#' given the nucleus radius and section height
+#' given the nucleus radius and tissue section height (thickness).
 #'
 #' @param r The nuclear radius
-#' @param h The section height
+#' @param h The section height (thickness)
 #' @return The average volume of nucleus sampled given the nucleus radius and 
 #' section height
-getAverageVolumeFrac<-function(r,h)
+getAverageVolumeFrac<-function(r, h)
 {
   Vavg=pi*h*(2/3*r^2 +r*h/3 - h^2/6)
   Vsphere=4/3*pi*r^3
   return(Vavg/Vsphere)
 }
 
-#' Helper function to get the maximum possible volume of nucleus
-#' sampled given the nucleus radius and section height
-#'
-#' @param r The nuclear radius
-#' @param h The section height
-#' @return The maximum possible volume of nucleus sampled given the nucleus 
-#' radius and section height
-getMaxVolumeFrac<-function(r,h)
-{
-  d=0
-  hh=h/2
-  v=pi*hh*(r^2 -d^2 -d*hh -(1/3)*(hh^2))
-  Vmax=2*v
-  Vsphere=(4/3)*pi*(r^3)
-  return(Vmax/Vsphere)
-}
-
-#' Helper function that returns the minimum possible volume of nucleus
-#' sampled given the nucleus radius and section height
-#' @param r The radius of the nuclei
-#' @param h The height of the section
-#' @return The minimum possible volume of nucleus sampled given the nucleus
-getMinVolumeFrac<-function(r,h)
-{
-  d=r-h
-  Vmin=pi*h*(r^2 - d^2 - d*h - (1/3)*(h^2))
-  Vsphere=(4/3)*pi*(r^3)
-  return(Vmin/Vsphere)
-}
-
-#' Helper function that returns the fraction of the nucleus sampled for a 
-#' specified distance from the midpoint
-#'
-#' @param d The distance sampled from the midpoint
-#' @param h The height of the section
-#' @param r The radius of the nuclei
-#' @return The fraction of the nucleus sampled for a specified distance from 
-#' the midpoint
-getVsegFrac<-function(d,h,r)
-{
-  Vseg=pi*h*(r^2-d^2-h^2/12)
-  Vsphere=4/3*pi*r^3
-  return(Vseg/Vsphere)
-}
-
-#' Helper function to check the arguments input to getManualCountsEstimates
+#' Helper function to check the arguments input to getManualCountsEstimates.
 #'
 #' @param probeCounts A matrix of manual spot counts with columns for 
 #' probes and rows for nuclei
@@ -94,10 +49,10 @@ getVsegFrac<-function(d,h,r)
 #' warning message
 checkManualCountsEstimatesArguments<-function(probeCounts, radius, height)
 {
-  if(!is.numeric(radius)) {stop("radius must be numeric")}
-  if(!is.numeric(height)) {stop("height must be numeric")}
-  if(radius < 0) {stop("radius must be greater than 0")}
-  if(height < 0) {stop("height must be greater than 0")}
+  if(!is.numeric(radius)) {stop("nuclear radius must be numeric")}
+  if(!is.numeric(height)) {stop("section height must be numeric")}
+  if(radius <= 0) {stop("nuclear radius must be greater than 0")}
+  if(height <= 0) {stop("section height must be greater than 0")}
   if(!is.matrix(probeCounts)) {stop("probeCounts must be a matrix")}
   if(ncol(probeCounts) < 1) {stop("probeCounts must have at least one column")}
   if(nrow(probeCounts) < 1) {stop("probeCounts must have at least one row")}
@@ -122,6 +77,7 @@ checkManualCountsEstimatesArguments<-function(probeCounts, radius, height)
 
 #' FrenchFISH function for generating volume adjusted spot counts from spots
 #' which have been manually counted (uses a Markov chain Monte Carlo method).
+#' Returns five quantile estimates and the mean estimate.
 #'
 #' @param probeCounts A matrix of manual spot counts with columns for 
 #' probes and rows for nuclei
@@ -139,7 +95,7 @@ getManualCountsEstimates<-function(probeCounts, radius, height)
 {
   checkManualCountsEstimatesArguments(probeCounts, radius, height)
   
-  avg<-getMaxVolumeFrac(radius, height)
+  avg<-getAverageVolumeFrac(radius, height)
   countEstimates<-c()
 
   for(i in seq_len(ncol(probeCounts)))
@@ -151,14 +107,14 @@ getManualCountsEstimates<-function(probeCounts, radius, height)
     res<-c()
     # if all counts for a probe are NA or NaN, make estimates NA
     if(length(no_na_probeCounts) == 0) {
-      res<-data.frame(X2.5 = NA, X25 = NA, X50 = NA, X75 = NA, X97.5 = NA)
+      res<-data.frame(X2.5 = NA, X25 = NA, X50 = NA, X75 = NA, X97.5 = NA, mean = NA)
     }
     else {
       posterior_aqua<-MCMCpack::MCpoissongamma(no_na_probeCounts,
                                                0.01,0.01,5000)/avg
       qtls<-summary(posterior_aqua)$quantiles
       res<-data.frame(X2.5 = c(qtls[1]), X25 = c(qtls[2]), X50 = c(qtls[3]), 
-                      X75 = c(qtls[4]), X97.5 = c(qtls[5]))
+                      X75 = c(qtls[4]), X97.5 = c(qtls[5]), mean = mean(posterior_aqua))
     }
     # Append probe results to all results
     rownames(res)<-colnames(probeCounts)[i]
@@ -168,21 +124,17 @@ getManualCountsEstimates<-function(probeCounts, radius, height)
                     row.names = NULL))
 }
 
-#' Helper function to convert spot counts and nuclear area measurements into
-#' continuous events for Poisson point estimation
+#' Helper function to convert spot counts and nuclear area measurements
+#' into continuous events for Poisson point estimation.
 #'
 #' @param area The nuclear area
 #' @param spots The number of spots counted
 #' @return Vector of continuous events for Poisson point estimation
-generatePPdat<-function(area,spots)
+generatePPdat<-function(area, spots)
 {
-  #print('generatePPdat')
-  #print(area)
-  #print(spots)
   indat<-0
   for(i in seq_len(length(area)))
   {
-    #print(spots[i])
     if(spots[i]==0)
     {
       indat[length(indat)]<-indat[length(indat)]+area[i]
@@ -198,7 +150,7 @@ generatePPdat<-function(area,spots)
   return(indat)
 }
 
-#' Helper function to check the arguments input to getAutomaticCountsEstimates
+#' Helper function to check the arguments input to getAutomaticCountsEstimates.
 #'
 #' @param probeCounts A matrix where the first column contains the areas of 
 #' the nuclear blobs (this column must be named "area" and the unit of its 
@@ -213,10 +165,10 @@ generatePPdat<-function(area,spots)
 #' warning message
 checkAutomaticCountsEstimatesArguments<-function(probeCounts, radius, height)
 {
-  if(!is.numeric(radius)) {stop("radius must be numeric")}
-  if(!is.numeric(height)) {stop("height must be numeric")}
-  if(radius < 0) {stop("radius must be greater than 0")}
-  if(height < 0) {stop("height must be greater than 0")}
+  if(!is.numeric(radius)) {stop("nuclear radius must be numeric")}
+  if(!is.numeric(height)) {stop("section height must be numeric")}
+  if(radius <= 0) {stop("nuclear radius must be greater than 0")}
+  if(height <= 0) {stop("section height must be greater than 0")}
   if(!is.matrix(probeCounts)) {stop("probeCounts must be a matrix")}
   if(nrow(probeCounts) < 1) {stop("probeCounts must have at least one row")}
   if(ncol(probeCounts) < 2) {
@@ -255,7 +207,7 @@ checkAutomaticCountsEstimatesArguments<-function(probeCounts, radius, height)
 
 #' Function to convert CSV output of the FISHalyseR automatic FISH 
 #' splot counting software to a count matrix suitable for input to 
-#' frenchFISH's getAutomaticCountsEstimates
+#' frenchFISH's getAutomaticCountsEstimates.
 #'
 #' @param pathToFishalyserCsv The path to the CSV file of automatic spot 
 #' counts outputted by FISHalyseR
@@ -302,7 +254,8 @@ convertFishalyserCsvToCountMatrix<-function(pathToFishalyserCsv)
 }
 
 #' FrenchFISH function for generating Poisson point estimates of spot counts 
-#' from spot counts which have been automatically generated.
+#' from spot counts which have been automatically generated. Returns a low
+#' confidence interval, a median, and a high confidence interval estimate.
 #'
 #' @param probeCounts A matrix where the first column contains the areas of 
 #' the nuclear blobs (this column must be named "area" and the unit of its 
@@ -326,7 +279,7 @@ getAutomaticCountsEstimates<-function(probeCounts, radius, height)
   checkAutomaticCountsEstimatesArguments(probeCounts, radius, height)
 
   cellarea<-pi*(radius^2)
-  adjustFact<-getAverageVolumeFrac(radius,height)
+  adjustFact<-getAverageVolumeFrac(radius, height)
   countEstimates<-c()
   for(i in 2:ncol(probeCounts))
   {

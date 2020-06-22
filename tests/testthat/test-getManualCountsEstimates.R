@@ -9,7 +9,7 @@ manual_counts_estimates <- getManualCountsEstimates(manual_counts, cell_radius, 
 
 test_that("getManualCountsEstimates function works", {
   expect_true(is.data.frame(manual_counts_estimates))
-  expect_equal(dim(manual_counts_estimates), c(3, 6))
+  expect_equal(dim(manual_counts_estimates), c(3, 7))
   expect_equal(toString(manual_counts_estimates$Probe), c("red, green, blue"))
 
   # Can't test exact value because of non-determinism
@@ -21,15 +21,15 @@ test_that("getManualCountsEstimates function works", {
 })
 
 test_that("getManualCountsEstimates function throws error messages when input arguments are invalid", {
-  expect_error(getManualCountsEstimates(automatic_counts, "radius", 4), "radius must be numeric")
-  expect_error(getManualCountsEstimates(automatic_counts, NA, 4), "radius must be numeric")
-  expect_error(getManualCountsEstimates(automatic_counts, 8, "height"), "height must be numeric")
-  expect_error(getManualCountsEstimates(automatic_counts, 8, NA), "height must be numeric")
-  expect_error(getManualCountsEstimates(automatic_counts, -8, 4), "radius must be greater than 0")
-  expect_error(getManualCountsEstimates(automatic_counts, 8, -4), "height must be greater than 0")
+  expect_error(getManualCountsEstimates(manual_counts, "radius", 4), "radius must be numeric")
+  expect_error(getManualCountsEstimates(manual_counts, NA, 4), "radius must be numeric")
+  expect_error(getManualCountsEstimates(manual_counts, 8, "height"), "height must be numeric")
+  expect_error(getManualCountsEstimates(manual_counts, 8, NA), "height must be numeric")
+  expect_error(getManualCountsEstimates(manual_counts, -8, 4), "radius must be greater than 0")
+  expect_error(getManualCountsEstimates(manual_counts, 8, -4), "height must be greater than 0")
   expect_error(getManualCountsEstimates("probeCounts", 8, 4), "probeCounts must be a matrix")
   expect_error(getManualCountsEstimates(5, 8, 4), "probeCounts must be a matrix")
-  expect_error(getAutomaticCountsEstimates(matrix(NA, nrow = 0, ncol = 0), 8, 4), "probeCounts must have at least one row")
+  expect_error(getManualCountsEstimates(matrix(NA, nrow = 0, ncol = 0), 8, 4), "probeCounts must have at least one column")
   #expect_error(getManualCountsEstimates(cbind(red=c(NA)), 8, 4), "probeCounts cannot have any NA or NaN values")
   #expect_error(getManualCountsEstimates(cbind(red=c(NaN)), 8, 4), "probeCounts cannot have any NA or NaN values")
   #expect_error(getManualCountsEstimates(cbind(red=c(Inf)), 8, 4), "probeCounts cannot have any Inf or -Inf values")

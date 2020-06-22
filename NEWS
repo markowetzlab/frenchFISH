@@ -2,6 +2,14 @@
 \title{News for Package \pkg{frenchFISH}}
 \encoding{UTF-8}
 
+\section{Version 0.99.8}{\itemize{
+\item
+Corrected bug that performed max volume correction for manual spot correction 
+rather than average volume correction. Added a mean count estimation as an 
+output to getManualCountsEstimates. Removed three unused helper functions,
+getMaxVolumeFrac, getMinVolumneFrac, and getVsegFrac.
+}}
+
 \section{Version 0.99.7}{\itemize{
 \item
 Added convertFishalyserCsvToCountMatrix function to convert the CSV count 

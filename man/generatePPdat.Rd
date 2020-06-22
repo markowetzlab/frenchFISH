@@ -2,8 +2,8 @@
 % Please edit documentation in R/frenchfish.R
 \name{generatePPdat}
 \alias{generatePPdat}
-\title{Helper function to convert spot counts and nuclear area measurements into
-continuous events for Poisson point estimation}
+\title{Helper function to convert spot counts and nuclear area measurements
+into continuous events for Poisson point estimation}
 \usage{
 generatePPdat(area, spots)
 }
@@ -16,6 +16,6 @@ generatePPdat(area, spots)
 Vector of continuous events for Poisson point estimation
 }
 \description{
-Helper function to convert spot counts and nuclear area measurements into
-continuous events for Poisson point estimation
+Helper function to convert spot counts and nuclear area measurements
+into continuous events for Poisson point estimation
 }

@@ -12,7 +12,7 @@ areAllNonnegativeIntegers(count_matrix)
 }
 \value{
 TRUE if all values in count_matrix are non-NA/NaN, non-negative 
-integers; otherwise FALSE
+integers; otherwise FALSE.
 }
 \description{
 Helper function to check if all values in the input count

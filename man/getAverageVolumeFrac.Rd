@@ -3,7 +3,7 @@
 \name{getAverageVolumeFrac}
 \alias{getAverageVolumeFrac}
 \title{Helper function to get the average volume of nucleus sampled
-given the nucleus radius and tissue section height (thickness)}
+given the nucleus radius and tissue section height (thickness).}
 \usage{
 getAverageVolumeFrac(r, h)
 }
@@ -18,5 +18,5 @@ section height
 }
 \description{
 Helper function to get the average volume of nucleus sampled
-given the nucleus radius and tissue section height (thickness)
+given the nucleus radius and tissue section height (thickness).
 }

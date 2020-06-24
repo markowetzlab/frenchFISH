@@ -3,9 +3,15 @@
 \name{getAutomaticCountsEstimates}
 \alias{getAutomaticCountsEstimates}
 \title{FrenchFISH function for generating Poisson point estimates of spot counts 
-from spot counts which have been automatically generated.}
+from spot counts which have been automatically generated. Returns a low
+confidence interval, a median, and a high confidence interval estimate.}
 \usage{
-getAutomaticCountsEstimates(probeCounts, radius, height)
+getAutomaticCountsEstimates(
+  probeCounts,
+  radius,
+  height,
+  volumeFracCorrection = "avg"
+)
 }
 \arguments{
 \item{probeCounts}{A matrix where the first column contains the areas of 
@@ -19,13 +25,17 @@ counts for different probes in each nuclear blob}
 
 \item{height}{The section height (must be measured in same unit as 
 \code{radius})}
+
+\item{volumeFracCorrection}{The method used to correct for volume fraction 
+(must be 'avg', 'max', or 'min'; defaults to 'avg')}
 }
 \value{
 The Poisson point estimates of spot counts for each probe
 }
 \description{
 FrenchFISH function for generating Poisson point estimates of spot counts 
-from spot counts which have been automatically generated.
+from spot counts which have been automatically generated. Returns a low
+confidence interval, a median, and a high confidence interval estimate.
 }
 \examples{
 automaticCountsEstimates<-getAutomaticCountsEstimates(

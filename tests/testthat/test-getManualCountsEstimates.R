@@ -21,6 +21,7 @@ test_that("getManualCountsEstimates function works", {
 })
 
 test_that("getManualCountsEstimates function throws error messages when input arguments are invalid", {
+  expect_error(getManualCountsEstimates(manual_counts, 8, 4, "x"), "volumeFracCorrection must be 'avg', 'max', or 'min'")
   expect_error(getManualCountsEstimates(manual_counts, "radius", 4), "radius must be numeric")
   expect_error(getManualCountsEstimates(manual_counts, NA, 4), "radius must be numeric")
   expect_error(getManualCountsEstimates(manual_counts, 8, "height"), "height must be numeric")

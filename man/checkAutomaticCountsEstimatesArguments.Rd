@@ -2,9 +2,14 @@
 % Please edit documentation in R/frenchfish.R
 \name{checkAutomaticCountsEstimatesArguments}
 \alias{checkAutomaticCountsEstimatesArguments}
-\title{Helper function to check the arguments input to getAutomaticCountsEstimates}
+\title{Helper function to check the arguments input to getAutomaticCountsEstimates.}
 \usage{
-checkAutomaticCountsEstimatesArguments(probeCounts, radius, height)
+checkAutomaticCountsEstimatesArguments(
+  probeCounts,
+  radius,
+  height,
+  volumeFracCorrection
+)
 }
 \arguments{
 \item{probeCounts}{A matrix where the first column contains the areas of 
@@ -18,11 +23,14 @@ counts for different probes in each nuclear blob}
 
 \item{height}{The section height (must be measured in same unit as 
 \code{radius})}
+
+\item{volumeFracCorrection}{The method used to correct for volume fraction 
+(must be 'avg', 'max', or 'min'; defaults to 'avg')}
 }
 \value{
 Nothing if all checks are passed; otherwise throws an error or 
 warning message
 }
 \description{
-Helper function to check the arguments input to getAutomaticCountsEstimates
+Helper function to check the arguments input to getAutomaticCountsEstimates.
 }

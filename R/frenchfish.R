@@ -37,6 +37,37 @@ getAverageVolumeFrac<-function(r, h)
   return(Vavg/Vsphere)
 }
 
+#' Helper function to get the maximum possible volume of nucleus
+#' sampled given the nucleus radius and section height
+#'
+#' @param r The nuclear radius
+#' @param h The section height (thickness)
+#' @return The maximum possible volume of nucleus sampled given the nucleus 
+#' radius and section height
+getMaxVolumeFrac<-function(r,h)
+{
+  d=0
+  hh=h/2
+  v=pi*hh*(r^2 -d^2 -d*hh -(1/3)*(hh^2))
+  Vmax=2*v
+  Vsphere=(4/3)*pi*(r^3)
+  return(Vmax/Vsphere)
+}
+
+#' Helper function that returns the minimum possible volume of nucleus
+#' sampled given the nucleus radius and section height
+#' 
+#' @param r The radius of the nuclei
+#' @param h The section height (thickness)
+#' @return The minimum possible volume of nucleus sampled given the nucleus
+getMinVolumeFrac<-function(r,h)
+{
+  d=r-h
+  Vmin=pi*h*(r^2 - d^2 - d*h - (1/3)*(h^2))
+  Vsphere=(4/3)*pi*(r^3)
+  return(Vmin/Vsphere)
+}
+
 #' Helper function to check the arguments input to getManualCountsEstimates.
 #'
 #' @param probeCounts A matrix of manual spot counts with columns for 
@@ -45,10 +76,16 @@ getAverageVolumeFrac<-function(r, h)
 #' \code{height})
 #' @param height The section height (must be measured in same unit as 
 #' \code{radius})
+#' @param volumeFracCorrection The method used to correct for volume fraction 
+#' (must be 'avg', 'max', or 'min'; defaults to 'avg')
 #' @return Nothing if all checks are passed; otherwise throws an error or 
 #' warning message
-checkManualCountsEstimatesArguments<-function(probeCounts, radius, height)
+checkManualCountsEstimatesArguments<-function(probeCounts, radius, height, 
+                                              volumeFracCorrection)
 {
+  if(!(volumeFracCorrection %in% c("avg", "max", "min"))) {
+    stop("volumeFracCorrection must be 'avg', 'max', or 'min'")
+  }
   if(!is.numeric(radius)) {stop("nuclear radius must be numeric")}
   if(!is.numeric(height)) {stop("section height must be numeric")}
   if(radius <= 0) {stop("nuclear radius must be greater than 0")}
@@ -85,17 +122,26 @@ checkManualCountsEstimatesArguments<-function(probeCounts, radius, height)
 #' \code{height})
 #' @param height The section height (must be measured in same unit as 
 #' \code{radius})
+#' @param volumeFracCorrection The method used to correct for volume fraction 
+#' (must be 'avg', 'max', or 'min'; defaults to 'avg')
 #' @return The volume adjusted spot counts for each probe that have been 
 #' generated using MCMC modelling
 #' @export
 #' @examples
 #' manualCountsEstimates<-getManualCountsEstimates(cbind(red=c(0,2,4),
 #'     green=c(5,3,1), blue=c(3,0,2)), 8, 4)
-getManualCountsEstimates<-function(probeCounts, radius, height)
+getManualCountsEstimates<-function(probeCounts, radius, height, volumeFracCorrection = "avg")
 {
-  checkManualCountsEstimatesArguments(probeCounts, radius, height)
+  checkManualCountsEstimatesArguments(probeCounts, radius, height, volumeFracCorrection)
   
-  avg<-getAverageVolumeFrac(radius, height)
+  if (volumeFracCorrection == "avg") {
+    adjustFact<-getAverageVolumeFrac(radius, height)
+  } else if (volumeFracCorrection == "max") {
+    adjustFact<-getMaxVolumeFrac(radius, height)
+  } else {
+    adjustFact<-getMinVolumeFrac(radius, height)
+  }
+
   countEstimates<-c()
 
   for(i in seq_len(ncol(probeCounts)))
@@ -111,7 +157,7 @@ getManualCountsEstimates<-function(probeCounts, radius, height)
     }
     else {
       posterior_aqua<-MCMCpack::MCpoissongamma(no_na_probeCounts,
-                                               0.01,0.01,5000)/avg
+                                               0.01,0.01,5000)/adjustFact
       qtls<-summary(posterior_aqua)$quantiles
       res<-data.frame(X2.5 = c(qtls[1]), X25 = c(qtls[2]), X50 = c(qtls[3]), 
                       X75 = c(qtls[4]), X97.5 = c(qtls[5]), mean = mean(posterior_aqua))
@@ -161,10 +207,16 @@ generatePPdat<-function(area, spots)
 #' \code{height})
 #' @param height The section height (must be measured in same unit as 
 #' \code{radius})
+#' @param volumeFracCorrection The method used to correct for volume fraction 
+#' (must be 'avg', 'max', or 'min'; defaults to 'avg')
 #' @return Nothing if all checks are passed; otherwise throws an error or 
 #' warning message
-checkAutomaticCountsEstimatesArguments<-function(probeCounts, radius, height)
+checkAutomaticCountsEstimatesArguments<-function(probeCounts, radius, height, 
+                                                 volumeFracCorrection)
 {
+  if(!(volumeFracCorrection %in% c("avg", "max", "min"))) {
+    stop("volumeFracCorrection must be 'avg', 'max', or 'min'")
+  }
   if(!is.numeric(radius)) {stop("nuclear radius must be numeric")}
   if(!is.numeric(height)) {stop("section height must be numeric")}
   if(radius <= 0) {stop("nuclear radius must be greater than 0")}
@@ -266,6 +318,8 @@ convertFishalyserCsvToCountMatrix<-function(pathToFishalyserCsv)
 #' \code{height})
 #' @param height The section height (must be measured in same unit as 
 #' \code{radius})
+#' @param volumeFracCorrection The method used to correct for volume fraction 
+#' (must be 'avg', 'max', or 'min'; defaults to 'avg')
 #' @return The Poisson point estimates of spot counts for each probe
 #' @export
 #' @examples
@@ -274,12 +328,21 @@ convertFishalyserCsvToCountMatrix<-function(pathToFishalyserCsv)
 #'     red=c(0,2,4), 
 #'     green=c(5,3,1), 
 #'     blue=c(3,0,2)), 8, 4)
-getAutomaticCountsEstimates<-function(probeCounts, radius, height)
+getAutomaticCountsEstimates<-function(probeCounts, radius, height, 
+                                      volumeFracCorrection = "avg")
 {
-  checkAutomaticCountsEstimatesArguments(probeCounts, radius, height)
+  checkAutomaticCountsEstimatesArguments(probeCounts, radius, height,
+                                         volumeFracCorrection)
+  
+  if (volumeFracCorrection == "avg") {
+    adjustFact<-getAverageVolumeFrac(radius, height)
+  } else if (volumeFracCorrection == "max") {
+    adjustFact<-getMaxVolumeFrac(radius, height)
+  } else {
+    adjustFact<-getMinVolumeFrac(radius, height)
+  }
 
   cellarea<-pi*(radius^2)
-  adjustFact<-getAverageVolumeFrac(radius, height)
   countEstimates<-c()
   for(i in 2:ncol(probeCounts))
   {

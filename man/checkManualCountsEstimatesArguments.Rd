@@ -2,9 +2,14 @@
 % Please edit documentation in R/frenchfish.R
 \name{checkManualCountsEstimatesArguments}
 \alias{checkManualCountsEstimatesArguments}
-\title{Helper function to check the arguments input to getManualCountsEstimates}
+\title{Helper function to check the arguments input to getManualCountsEstimates.}
 \usage{
-checkManualCountsEstimatesArguments(probeCounts, radius, height)
+checkManualCountsEstimatesArguments(
+  probeCounts,
+  radius,
+  height,
+  volumeFracCorrection
+)
 }
 \arguments{
 \item{probeCounts}{A matrix of manual spot counts with columns for 
@@ -15,11 +20,14 @@ probes and rows for nuclei}
 
 \item{height}{The section height (must be measured in same unit as 
 \code{radius})}
+
+\item{volumeFracCorrection}{The method used to correct for volume fraction 
+(must be 'avg', 'max', or 'min'; defaults to 'avg')}
 }
 \value{
 Nothing if all checks are passed; otherwise throws an error or 
 warning message
 }
 \description{
-Helper function to check the arguments input to getManualCountsEstimates
+Helper function to check the arguments input to getManualCountsEstimates.
 }

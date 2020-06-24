@@ -3,9 +3,15 @@
 \name{getManualCountsEstimates}
 \alias{getManualCountsEstimates}
 \title{FrenchFISH function for generating volume adjusted spot counts from spots
-which have been manually counted (uses a Markov chain Monte Carlo method).}
+which have been manually counted (uses a Markov chain Monte Carlo method).
+Returns five quantile estimates and the mean estimate.}
 \usage{
-getManualCountsEstimates(probeCounts, radius, height)
+getManualCountsEstimates(
+  probeCounts,
+  radius,
+  height,
+  volumeFracCorrection = "avg"
+)
 }
 \arguments{
 \item{probeCounts}{A matrix of manual spot counts with columns for 
@@ -16,6 +22,9 @@ probes and rows for nuclei}
 
 \item{height}{The section height (must be measured in same unit as 
 \code{radius})}
+
+\item{volumeFracCorrection}{The method used to correct for volume fraction 
+(must be 'avg', 'max', or 'min'; defaults to 'avg')}
 }
 \value{
 The volume adjusted spot counts for each probe that have been 
@@ -24,6 +33,7 @@ generated using MCMC modelling
 \description{
 FrenchFISH function for generating volume adjusted spot counts from spots
 which have been manually counted (uses a Markov chain Monte Carlo method).
+Returns five quantile estimates and the mean estimate.
 }
 \examples{
 manualCountsEstimates<-getManualCountsEstimates(cbind(red=c(0,2,4),

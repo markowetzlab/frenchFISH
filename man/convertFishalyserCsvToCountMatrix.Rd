@@ -4,7 +4,7 @@
 \alias{convertFishalyserCsvToCountMatrix}
 \title{Function to convert CSV output of the FISHalyseR automatic FISH 
 splot counting software to a count matrix suitable for input to 
-frenchFISH's getAutomaticCountsEstimates}
+frenchFISH's getAutomaticCountsEstimates.}
 \usage{
 convertFishalyserCsvToCountMatrix(pathToFishalyserCsv)
 }
@@ -18,7 +18,7 @@ A count matrix suitable for input to getAutomaticCountsEstimates
 \description{
 Function to convert CSV output of the FISHalyseR automatic FISH 
 splot counting software to a count matrix suitable for input to 
-frenchFISH's getAutomaticCountsEstimates
+frenchFISH's getAutomaticCountsEstimates.
 }
 \examples{
 probeCounts<-convertFishalyserCsvToCountMatrix(

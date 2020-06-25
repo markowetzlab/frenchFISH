@@ -77,7 +77,7 @@ getMinVolumeFrac<-function(r,h)
 #' @param height The section height (must be measured in same unit as 
 #' \code{radius})
 #' @param volumeFracCorrection The method used to correct for volume fraction 
-#' (must be 'avg', 'max', or 'min'; defaults to 'avg')
+#' (must be 'avg', 'max', or 'min'; defaults to 'max')
 #' @return Nothing if all checks are passed; otherwise throws an error or 
 #' warning message
 checkManualCountsEstimatesArguments<-function(probeCounts, radius, height, 
@@ -123,14 +123,14 @@ checkManualCountsEstimatesArguments<-function(probeCounts, radius, height,
 #' @param height The section height (must be measured in same unit as 
 #' \code{radius})
 #' @param volumeFracCorrection The method used to correct for volume fraction 
-#' (must be 'avg', 'max', or 'min'; defaults to 'avg')
+#' (must be 'avg', 'max', or 'min'; defaults to 'max')
 #' @return The volume adjusted spot counts for each probe that have been 
 #' generated using MCMC modelling
 #' @export
 #' @examples
 #' manualCountsEstimates<-getManualCountsEstimates(cbind(red=c(0,2,4),
 #'     green=c(5,3,1), blue=c(3,0,2)), 8, 4)
-getManualCountsEstimates<-function(probeCounts, radius, height, volumeFracCorrection = "avg")
+getManualCountsEstimates<-function(probeCounts, radius, height, volumeFracCorrection = "max")
 {
   checkManualCountsEstimatesArguments(probeCounts, radius, height, volumeFracCorrection)
   

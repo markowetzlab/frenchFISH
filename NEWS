@@ -2,6 +2,12 @@
 \title{News for Package \pkg{frenchFISH}}
 \encoding{UTF-8}
 
+\section{Version 0.99.10}{\itemize{
+\item
+Set default volume fraction correction to be maximum volume correction for
+correcting manual spot counts (getManualCountsEstimates).
+}}
+
 \section{Version 0.99.9}{\itemize{
 \item
 Added an argument to getManualCountsEstimates and getAutomaticCountsEstimates. 

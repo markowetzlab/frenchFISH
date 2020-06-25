@@ -22,7 +22,7 @@ probes and rows for nuclei}
 \code{radius})}
 
 \item{volumeFracCorrection}{The method used to correct for volume fraction 
-(must be 'avg', 'max', or 'min'; defaults to 'avg')}
+(must be 'avg', 'max', or 'min'; defaults to 'max')}
 }
 \value{
 Nothing if all checks are passed; otherwise throws an error or 

@@ -10,7 +10,7 @@ getManualCountsEstimates(
   probeCounts,
   radius,
   height,
-  volumeFracCorrection = "avg"
+  volumeFracCorrection = "max"
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ probes and rows for nuclei}
 \code{radius})}
 
 \item{volumeFracCorrection}{The method used to correct for volume fraction 
-(must be 'avg', 'max', or 'min'; defaults to 'avg')}
+(must be 'avg', 'max', or 'min'; defaults to 'max')}
 }
 \value{
 The volume adjusted spot counts for each probe that have been 
